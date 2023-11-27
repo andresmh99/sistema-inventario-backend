@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id Int @id @default(autoincrement())
+  nombreUsuario String @unique
+  rol Rol @relation(fields: [rolId], references: [id])
+  rolId Int
+  nombre String 
+  apellido String 
+  email String @unique
+  password String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  transacciones Transaccion[] 
+
+}
+
+model Rol {
+  id Int @id @default(autoincrement()) 
+  nombreRol String @unique
+  usuarios Usuario[]
+}
+
+model Categoria {
+  id Int @id @default(autoincrement())
+  nombreCategoria String @unique
+  descripcion String
+  productos Producto[]
+}
+
+model Producto {
+  id Int @id @default(autoincrement())
+  nombreProducto String @unique
+  descripcion String ?
+  sku String @unique
+  precioVenta Float 
+  precioCompra Float
+  marca String 
+  stock Int 
+  imagen String ?
+  idCategoria Int 
+  categoria Categoria @relation(fields: [idCategoria], references: [id])
+  ventas Venta[]
+}
+
+model Transaccion {
+  id Int @id @default(autoincrement())
+  fecha DateTime @default(now())
+  idUsuario Int
+  usuario Usuario @relation(fields: [idUsuario], references:[id])
+  ventas Venta[]
+  gastos Gasto[]
+}
+model Gasto {
+  id Int @id @default(autoincrement()) 
+  monto Float 
+  idTransaccion Int
+  transaccion Transaccion @relation(fields: [idTransaccion], references: [id])
+}
+
+model Venta {
+  id Int @id @default(autoincrement())
+  idProducto Int 
+  producto Producto @relation(fields: [idProducto], references: [id])
+  cantidad Int
+  idMetodoPago Int
+  metodoPago Metodo_pago @relation(fields: [idMetodoPago], references: [id])
+  idTransaccion Int
+  transaccion Transaccion @relation(fields: [idTransaccion], references: [id])
+}
+
+model Metodo_pago {
+  id Int @id @default(autoincrement())
+  nombre String
+  ventas Venta[]
+}
