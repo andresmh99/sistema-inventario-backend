@@ -16,6 +16,9 @@ const iniciarSesion = async (req, res) => {
             where: {
                 OR: [{ email: email }, { nombreUsuario: nombreUsuario }],
             },
+            include: {
+                rol: true,
+            },
         });
         if (!usuario)
             return res
@@ -27,22 +30,12 @@ const iniciarSesion = async (req, res) => {
                 .status(404)
                 .json({ message: "El email o la contraseña no son correctos" });
         const token = jsonwebtoken_1.default.sign({ id: usuario.id }, process.env.TOKEN_SECRET_KEY || "TokenIvalid", { expiresIn: 3600 });
-        return res
-            .header("auth-token", token)
-            .status(200)
-            .json({
+        usuario.password = "";
+        return res.header("auth-token", token).status(200).json({
             ok: true,
             msj: "Ingreso Correcto",
             token,
-            usuario: {
-                id: usuario.id,
-                nombreUsuario: usuario.nombreUsuario,
-                nombre: usuario.nombre,
-                apellido: usuario.apellido,
-                email: usuario.email,
-                createdAt: usuario.createdAt,
-                rolId: usuario.rolId,
-            },
+            usuario,
         });
     }
     catch (error) {

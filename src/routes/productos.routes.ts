@@ -16,16 +16,18 @@ import {
   validarCamposNumericos,
   validarCamposRequeridos,
 } from "../middlewares/validacionesProducto";
+import { authJwt } from "../middlewares";
 
 const router: Router = Router();
 
-router.get("/productos", obtenerProductos);
-router.get("/productos/buscar", filtroProducto);
-router.get("/productos/:id", obtenerProductoPorId);
+router.get("/productos",[authJwt.TokenValidation], obtenerProductos);
+router.get("/productos/buscar",[authJwt.TokenValidation], filtroProducto);
+router.get("/productos/:id",[authJwt.TokenValidation], obtenerProductoPorId);
 router.post(
   "/productos",
   [
     multer.single("imagen"),
+    authJwt.TokenValidation,
     validarCamposRequeridos,
     validarCampoUnicoEnBD,
     validarCamposNumericos,
@@ -34,14 +36,14 @@ router.post(
 );
 router.put(
   "/productos/:id",
-  [validarCampoUnicoEnBDActualizar],
+  [authJwt.TokenValidation,validarCampoUnicoEnBDActualizar],
   actualizarProducto
 );
-router.delete("/productos/:id", eliminarProducto);
-router.put("/productos/actualizarStock/:id", actualizarStock);
+router.delete("/productos/:id" , [authJwt.TokenValidation],eliminarProducto);
+router.put("/productos/actualizarStock/:id",[authJwt.TokenValidation], actualizarStock);
 router.put(
   "/productos/actualizarImagen/:id",
-  [multer.single("imagen")],
+  [multer.single("imagen"), authJwt.TokenValidation],
   actualizarImagen
 );
 

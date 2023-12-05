@@ -12,6 +12,9 @@ export const iniciarSesion = async (req: Request, res: Response) => {
       where: {
         OR: [{ email: email }, { nombreUsuario: nombreUsuario }],
       },
+      include: {
+        rol: true,
+      },
     });
     if (!usuario)
       return res
@@ -31,24 +34,13 @@ export const iniciarSesion = async (req: Request, res: Response) => {
       process.env.TOKEN_SECRET_KEY || "TokenIvalid",
       { expiresIn: 3600 }
     );
-
-    return res
-      .header("auth-token", token)
-      .status(200)
-      .json({
-        ok: true,
-        msj: "Ingreso Correcto",
-        token,
-        usuario: {
-          id: usuario.id,
-          nombreUsuario: usuario.nombreUsuario,
-          nombre: usuario.nombre,
-          apellido: usuario.apellido,
-          email: usuario.email,
-          createdAt: usuario.createdAt,
-          rolId: usuario.rolId,
-        },
-      });
+    usuario.password = "";
+    return res.header("auth-token", token).status(200).json({
+      ok: true,
+      msj: "Ingreso Correcto",
+      token,
+      usuario,
+    });
   } catch (error) {
     return res.status(500).json({ message: "Hubo un problema en el servidor" });
   }

@@ -33,7 +33,6 @@ export const getUsuarios = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Algo ha fallado" });
   }
 };
-
 export const obtenerUsuario = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
 

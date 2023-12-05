@@ -27,7 +27,7 @@ const getUsuarios = async (req, res) => {
                     },
                 },
             },
-            skip,
+            skip, // Saltar registros en función de la página
             take: pageSize, // Tomar una cantidad específica de registros por página
         });
         res.json(usuarios);
