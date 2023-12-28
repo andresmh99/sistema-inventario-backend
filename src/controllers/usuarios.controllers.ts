@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { prisma } from "../database/database";
 import bcrypt from "bcryptjs";
+import { ok } from "assert";
 
-export const getUsuarios = async (req: Request, res: Response) => {
+export const obtenerUsuarios = async (req: Request, res: Response) => {
   const page: number = Number(req.query.page) || 1;
   const pageSize: number = 10;
   const skip: number = (page - 1) * pageSize;
@@ -24,13 +25,21 @@ export const getUsuarios = async (req: Request, res: Response) => {
           },
         },
       },
+      orderBy: { nombre: "asc" },
       skip, // Saltar registros en función de la página
       take: pageSize, // Tomar una cantidad específica de registros por página
     });
 
-    res.json(usuarios);
+    const totalCount = await prisma.usuario.count();
+    const pageCount = Math.ceil(totalCount / pageSize);
+
+    const info = {
+      count: totalCount,
+      pages: pageCount,
+    };
+    return res.status(200).json({ ok: true, info, usuarios, skip });
   } catch (error) {
-    return res.status(500).json({ message: "Algo ha fallado" });
+    return res.status(500).json({ msj: "Algo ha fallado" });
   }
 };
 export const obtenerUsuario = async (req: Request, res: Response) => {
@@ -58,9 +67,9 @@ export const obtenerUsuario = async (req: Request, res: Response) => {
     if (usuario) {
       return res.json(usuario);
     }
-    return res.status(404).json({ message: "Registro no encontrado" });
+    return res.status(404).json({ msj: "Registro no encontrado" });
   } catch (error) {
-    return res.status(500).json({ message: "algo ha fallado" });
+    return res.status(500).json({ msj: "algo ha fallado" });
   }
 };
 export const crearUsuario = async (req: Request, res: Response) => {
@@ -74,7 +83,7 @@ export const crearUsuario = async (req: Request, res: Response) => {
     if (existingUserWithUsername) {
       return res
         .status(400)
-        .json({ message: "El nombre de usuario ya está en uso" });
+        .json({ msj: "El nombre de usuario ya está en uso" });
     }
 
     // Comprobar si el nuevo email ya está en uso
@@ -86,7 +95,7 @@ export const crearUsuario = async (req: Request, res: Response) => {
     if (existingUserWithEmail) {
       return res
         .status(400)
-        .json({ message: "El correo electrónico ya está en uso" });
+        .json({ msj: "El correo electrónico ya está en uso" });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const usuario = await prisma.usuario.create({
@@ -101,7 +110,7 @@ export const crearUsuario = async (req: Request, res: Response) => {
     });
 
     if (!usuario) {
-      return res.status(404).json({ message: "El Usuario no ha sido creado" });
+      return res.status(404).json({ msj: "El Usuario no ha sido creado" });
     }
     return res.json({
       ok: true,
@@ -117,8 +126,7 @@ export const crearUsuario = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "algo ha fallado", error });
+    return res.status(500).json({ msj: "algo ha fallado", error });
   }
 };
 export const actualizarUsuario = async (req: Request, res: Response) => {
@@ -130,7 +138,7 @@ export const actualizarUsuario = async (req: Request, res: Response) => {
       apellido: req.body.apellido,
       email: req.body.email,
       password: req.body.password,
-      rolId: req.body.rolId,
+      rolId: parseInt(req.body.rolId),
     };
 
     if (req.body.password) {
@@ -149,7 +157,7 @@ export const actualizarUsuario = async (req: Request, res: Response) => {
     if (existingUserWithUsername) {
       return res
         .status(400)
-        .json({ message: "El nombre de usuario ya está en uso" });
+        .json({ ok: false, msj: "El nombre de usuario ya está en uso" });
     }
 
     // Comprobar si el nuevo email ya está en uso
@@ -165,7 +173,7 @@ export const actualizarUsuario = async (req: Request, res: Response) => {
     if (existingUserWithEmail) {
       return res
         .status(400)
-        .json({ message: "El correo electrónico ya está en uso" });
+        .json({ ok: false, msj: "El correo electrónico ya está en uso" });
     }
 
     const usuario = await prisma.usuario.update({
@@ -175,19 +183,18 @@ export const actualizarUsuario = async (req: Request, res: Response) => {
     });
 
     if (!usuario) {
-      return res.status(404).json({ message: "Registro no Actualizado" });
+      return res
+        .status(404)
+        .json({ ok: false, msj: "Registro no Actualizado" });
     }
-    return res.json({
-      id: usuario.id,
-      nombre_usuario: usuario.nombreUsuario,
-      nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      email: usuario.email,
-      rolId: usuario.rolId,
-      updatedAt: usuario.updatedAt,
+    usuario.password = "";
+    return res.status(200).json({
+      ok: true,
+      msj: "Registro Actualizado correctamente",
+      usuario,
     });
   } catch (error) {
-    return res.status(500).json({ message: "algo ha fallado", error });
+    return res.status(500).json({ ok: false, msj: "algo ha fallado", error });
   }
 };
 export const eliminarUsuario = async (req: Request, res: Response) => {
@@ -195,10 +202,65 @@ export const eliminarUsuario = async (req: Request, res: Response) => {
   try {
     const usuario = await prisma.usuario.delete({ where: { id: id } });
     if (!usuario) {
-      return res.status(404).json({ message: "Registro no encontrado" });
+      return res.status(404).json({ ok: false, msj: "Registro no encontrado" });
     }
-    return res.sendStatus(204);
+    return res
+      .status(200)
+      .json({ ok: true, msj: "Registro eliminado exitosamente" });
   } catch (error) {
-    return res.status(500).json({ message: "algo ha fallado" });
+    return res.status(500).json({ ok: false, msj: "algo ha fallado" });
+  }
+};
+export const filtroUsuario = async (req: Request, res: Response) => {
+  const page: number = Number(req.query.page) || 1;
+  const pageSize: number = 10;
+  const skip: number = (page - 1) * pageSize;
+  try {
+    const data = req.query["s"] as string;
+    const usuarios = await prisma.usuario.findMany({
+      where: {
+        OR: [
+          { nombre: { startsWith: data, mode: "insensitive" } },
+          { nombreUsuario: { startsWith: data, mode: "insensitive" } },
+          { email: { startsWith: data, mode: "insensitive" } },
+        ],
+      },
+      include: {
+        rol: true, // Ajusta según la relación en tu modelo
+      },
+      skip: skip,
+      take: pageSize,
+      orderBy: { nombre: "asc" },
+    });
+
+    const totalCount = await prisma.usuario.count();
+    const pageCount = Math.ceil(totalCount / pageSize);
+
+    const info = {
+      count: totalCount,
+      pages: pageCount,
+    };
+
+    if (usuarios.length > 0) {
+      return res.status(200).json({
+        ok: true,
+        msj: "",
+        usuarios,
+        info,
+      });
+    }
+
+    return res.status(404).json({
+      ok: false,
+      msj: "Usuario no encontrado",
+      usuarios: [],
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msj: "Error al buscar Usuario",
+      error,
+    });
   }
 };

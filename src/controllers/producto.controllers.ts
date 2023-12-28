@@ -47,7 +47,7 @@ export const obtenerProductoPorId = async (req: Request, res: Response) => {
     if (producto) {
       return res.json({
         ok: true,
-        msj:'',
+        msj: "",
         producto,
       });
     }
@@ -230,7 +230,6 @@ export const filtroProducto = async (req: Request, res: Response) => {
   const pageSize: number = 10;
   const skip: number = (page - 1) * pageSize;
   try {
-    
     const data = req.query["s"] as string;
     const productos = await prisma.producto.findMany({
       where: {
@@ -244,8 +243,8 @@ export const filtroProducto = async (req: Request, res: Response) => {
         categoria: true, // Ajusta según la relación en tu modelo
       },
       skip: skip,
-      take:pageSize,
-      orderBy: {nombreProducto: 'asc'}
+      take: pageSize,
+      orderBy: { nombreProducto: "asc" },
     });
 
     const totalCount = await prisma.producto.count();
@@ -259,16 +258,16 @@ export const filtroProducto = async (req: Request, res: Response) => {
     if (productos.length > 0) {
       return res.status(200).json({
         ok: true,
-        msj:'',
+        msj: "",
         productos,
-        info
+        info,
       });
     }
 
     return res.status(404).json({
       ok: false,
       msj: "Producto no encontrado",
-      productos:[]
+      productos: [],
     });
   } catch (error) {
     return res.status(500).json({

@@ -1,18 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminarCategoria = exports.actualizarCategoria = exports.crearCategoria = exports.obtenerCategoria = exports.obtenerCategorias = void 0;
+exports.filtroCategoria = exports.eliminarCategoria = exports.actualizarCategoria = exports.crearCategoria = exports.obtenerCategoria = exports.obtenerCategorias = void 0;
 const database_1 = require("../database/database");
 const obtenerCategorias = async (req, res) => {
+    /*const page: number = Number(req.query.page) || 1;
+    const pageSize: number = 10;
+    const skip: number = (page - 1) * pageSize;*/
     try {
-        const categorias = await database_1.prisma.categoria.findMany();
-        return res.status(200).json({
-            ok: true,
-            categorias,
+        const categorias = await database_1.prisma.categoria.findMany({
+            //skip: skip,
+            //take: pageSize,
+            orderBy: { nombreCategoria: "asc" },
+        });
+        if (categorias) {
+            return res.status(200).json({
+                ok: true,
+                msj: "",
+                categorias,
+            });
+        }
+        return res.status(404).json({
+            ok: false,
+            msj: "Categoria no encontrada",
+            categorias: [],
         });
     }
     catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Ha Habido un error", error });
+        return res.status(500).json({ msj: "Ha Habido un error", error });
     }
 };
 exports.obtenerCategorias = obtenerCategorias;
@@ -32,7 +46,7 @@ const obtenerCategoria = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ message: "Ha Habido un error", error });
+        return res.status(500).json({ msj: "Ha Habido un error", error });
     }
 };
 exports.obtenerCategoria = obtenerCategoria;
@@ -68,7 +82,7 @@ const crearCategoria = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ message: "Ha Habido un error", error });
+        return res.status(500).json({ msj: "Ha Habido un error", error });
     }
 };
 exports.crearCategoria = crearCategoria;
@@ -105,9 +119,7 @@ const actualizarCategoria = async (req, res) => {
         });
     }
     catch (error) {
-        return res
-            .status(404)
-            .json({ message: "No se ha encontrado registro", error });
+        return res.status(404).json({ msj: "No se ha encontrado registro", error });
     }
 };
 exports.actualizarCategoria = actualizarCategoria;
@@ -116,7 +128,10 @@ const eliminarCategoria = async (req, res) => {
         const id = parseInt(req.params["id"]);
         const categoria = await database_1.prisma.categoria.delete({ where: { id: id } });
         if (categoria) {
-            return res.sendStatus(204);
+            return res.status(200).json({
+                ok: true,
+                msj: "Categoria " + categoria.nombreCategoria + " Eliminada exitosamente",
+            });
         }
         return res.status(403).send({
             ok: false,
@@ -124,7 +139,50 @@ const eliminarCategoria = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ message: "Ha Habido un error", error });
+        return res.status(500).json({ msj: "Ha Habido un error", error });
     }
 };
 exports.eliminarCategoria = eliminarCategoria;
+const filtroCategoria = async (req, res) => {
+    const page = Number(req.query.page) || 1;
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+    try {
+        const data = req.query["s"];
+        const categorias = await database_1.prisma.categoria.findMany({
+            where: {
+                OR: [{ nombreCategoria: { startsWith: data, mode: "insensitive" } }],
+            },
+            skip: skip,
+            take: pageSize,
+            orderBy: { nombreCategoria: "asc" },
+        });
+        const totalCount = await database_1.prisma.categoria.count();
+        const pageCount = Math.ceil(totalCount / pageSize);
+        const info = {
+            count: totalCount,
+            pages: pageCount,
+        };
+        if (categorias.length > 0) {
+            return res.status(200).json({
+                ok: true,
+                msj: "",
+                categorias,
+                info,
+            });
+        }
+        return res.status(404).json({
+            ok: false,
+            msj: "Categoria no encontrada",
+            categorias: [],
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msj: "Error al buscar categoria",
+            error,
+        });
+    }
+};
+exports.filtroCategoria = filtroCategoria;

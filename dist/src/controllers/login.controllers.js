@@ -23,12 +23,12 @@ const iniciarSesion = async (req, res) => {
         if (!usuario)
             return res
                 .status(404)
-                .json({ message: "El email o la contraseña no son correctos" });
+                .json({ msj: "El email o la contraseña no son correctos" });
         const correctPassword = await bcryptjs_1.default.compare(password, usuario.password);
         if (!correctPassword)
             return res
                 .status(404)
-                .json({ message: "El email o la contraseña no son correctos" });
+                .json({ msj: "El email o la contraseña no son correctos" });
         const token = jsonwebtoken_1.default.sign({ id: usuario.id }, process.env.TOKEN_SECRET_KEY || "TokenIvalid", { expiresIn: 3600 });
         usuario.password = "";
         return res.header("auth-token", token).status(200).json({
@@ -39,7 +39,7 @@ const iniciarSesion = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ message: "Hubo un problema en el servidor" });
+        return res.status(500).json({ msj: "Hubo un problema en el servidor" });
     }
 };
 exports.iniciarSesion = iniciarSesion;

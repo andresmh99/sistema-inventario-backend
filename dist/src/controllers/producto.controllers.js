@@ -47,7 +47,7 @@ const obtenerProductoPorId = async (req, res) => {
         if (producto) {
             return res.json({
                 ok: true,
-                msj: '',
+                msj: "",
                 producto,
             });
         }
@@ -248,7 +248,7 @@ const filtroProducto = async (req, res) => {
             },
             skip: skip,
             take: pageSize,
-            orderBy: { nombreProducto: 'asc' }
+            orderBy: { nombreProducto: "asc" },
         });
         const totalCount = await database_1.prisma.producto.count();
         const pageCount = Math.ceil(totalCount / pageSize);
@@ -259,15 +259,15 @@ const filtroProducto = async (req, res) => {
         if (productos.length > 0) {
             return res.status(200).json({
                 ok: true,
-                msj: '',
+                msj: "",
                 productos,
-                info
+                info,
             });
         }
         return res.status(404).json({
             ok: false,
             msj: "Producto no encontrado",
-            productos: []
+            productos: [],
         });
     }
     catch (error) {

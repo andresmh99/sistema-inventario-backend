@@ -13,6 +13,7 @@ const usuarios_routes_1 = __importDefault(require("./routes/usuarios.routes"));
 const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const categorias_routes_1 = __importDefault(require("./routes/categorias.routes"));
 const productos_routes_1 = __importDefault(require("./routes/productos.routes"));
+const roles_routes_1 = __importDefault(require("./routes/roles.routes"));
 const server = new server_1.default();
 server.app.use(function (req, res, next) {
     // Website you wish to allow to connect
@@ -46,3 +47,4 @@ server.app.use("/", usuarios_routes_1.default);
 server.app.use("/", auth_routes_1.default);
 server.app.use("/", categorias_routes_1.default);
 server.app.use("/", productos_routes_1.default);
+server.app.use("/", roles_routes_1.default);

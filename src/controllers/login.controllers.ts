@@ -19,7 +19,7 @@ export const iniciarSesion = async (req: Request, res: Response) => {
     if (!usuario)
       return res
         .status(404)
-        .json({ message: "El email o la contraseña no son correctos" });
+        .json({ msj: "El email o la contraseña no son correctos" });
     const correctPassword: boolean = await bcrypt.compare(
       password,
       usuario.password
@@ -27,7 +27,7 @@ export const iniciarSesion = async (req: Request, res: Response) => {
     if (!correctPassword)
       return res
         .status(404)
-        .json({ message: "El email o la contraseña no son correctos" });
+        .json({ msj: "El email o la contraseña no son correctos" });
 
     const token: string = jwt.sign(
       { id: usuario.id },
@@ -42,6 +42,6 @@ export const iniciarSesion = async (req: Request, res: Response) => {
       usuario,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Hubo un problema en el servidor" });
+    return res.status(500).json({ msj: "Hubo un problema en el servidor" });
   }
 };

@@ -7,24 +7,23 @@ exports.TokenValidation = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const TokenValidation = async (req, res, next) => {
     try {
-        const token = req.header('auth-token');
-        console.log(token);
+        const token = req.header("auth-token");
         if (!token) {
             return res.status(401).json({
                 ok: false,
-                msj: 'Access denied',
+                msj: "Access denied",
             });
         }
-        const payload = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET_KEY || 'TokenIvalid');
+        const payload = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET_KEY || "TokenIvalid");
         req.userId = payload._id;
         /*const user = await User.findById(req.userId, { password: 0 })
-        if (!user)
-          return res.json({ ok: false, msj: 'Usuario no encontrado', user })
-    */
+          if (!user)
+            return res.json({ ok: false, msj: 'Usuario no encontrado', user })
+      */
         next();
     }
     catch (error) {
-        return res.status(401).json({ ok: false, msj: 'No tiene autorización' });
+        return res.status(401).json({ ok: false, msj: "No tiene autorización" });
     }
 };
 exports.TokenValidation = TokenValidation;

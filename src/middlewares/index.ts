@@ -1,3 +1,3 @@
-import * as authJwt from './autorizacion';
+import * as authJwt from "./autorizacion";
 
-export {authJwt}
+export { authJwt };

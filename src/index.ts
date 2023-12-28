@@ -5,9 +5,10 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 import Server from "./server/server";
 import usuariosRoutes from "./routes/usuarios.routes";
-import authRoutes from './routes/auth.routes';
-import categoriasRoutes from './routes/categorias.routes';
-import productosRoutes from './routes/productos.routes';
+import authRoutes from "./routes/auth.routes";
+import categoriasRoutes from "./routes/categorias.routes";
+import productosRoutes from "./routes/productos.routes";
+import rolesRoutes from "./routes/roles.routes";
 
 const server = new Server();
 
@@ -53,3 +54,4 @@ server.app.use("/", usuariosRoutes);
 server.app.use("/", authRoutes);
 server.app.use("/", categoriasRoutes);
 server.app.use("/", productosRoutes);
+server.app.use("/", rolesRoutes);
