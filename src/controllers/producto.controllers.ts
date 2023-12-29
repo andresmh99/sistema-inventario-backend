@@ -23,13 +23,14 @@ export const obtenerProductos = async (req: Request, res: Response) => {
       count: totalCount,
       pages: pageCount,
     };
-    return res.json({
+    return res.status(200).json({
       ok: true,
       info,
       productos,
       skip,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ msj: "Error en el servidor", error });
   }
 };

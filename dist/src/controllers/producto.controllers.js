@@ -21,7 +21,7 @@ const obtenerProductos = async (req, res) => {
             count: totalCount,
             pages: pageCount,
         };
-        return res.json({
+        return res.status(200).json({
             ok: true,
             info,
             productos,
@@ -29,6 +29,7 @@ const obtenerProductos = async (req, res) => {
         });
     }
     catch (error) {
+        console.log(error);
         return res.status(500).json({ msj: "Error en el servidor", error });
     }
 };
