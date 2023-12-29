@@ -29,7 +29,7 @@ const obtenerProductos = async (req, res) => {
         });
     }
     catch (error) {
-        res.status(500).json({ msj: "Error en el servidor", error });
+        return res.status(500).json({ msj: "Error en el servidor", error });
     }
 };
 exports.obtenerProductos = obtenerProductos;

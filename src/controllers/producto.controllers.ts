@@ -30,7 +30,7 @@ export const obtenerProductos = async (req: Request, res: Response) => {
       skip,
     });
   } catch (error) {
-    res.status(500).json({ msj: "Error en el servidor", error });
+    return res.status(500).json({ msj: "Error en el servidor", error });
   }
 };
 
