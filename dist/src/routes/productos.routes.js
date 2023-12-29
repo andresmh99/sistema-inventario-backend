@@ -10,7 +10,7 @@ const validacionesProducto_1 = require("../middlewares/validacionesProducto");
 const middlewares_1 = require("../middlewares");
 const fileUploads_1 = __importDefault(require("../libs/fileUploads"));
 const router = (0, express_1.Router)();
-router.get("/productos", [middlewares_1.authJwt.TokenValidation], producto_controllers_1.obtenerProductos);
+router.get("/productos", producto_controllers_1.obtenerProductos);
 router.get("/productos/buscar", [middlewares_1.authJwt.TokenValidation], producto_controllers_1.filtroProducto);
 router.get("/productos/:id", [middlewares_1.authJwt.TokenValidation], producto_controllers_1.obtenerProductoPorId);
 router.post("/productos", [

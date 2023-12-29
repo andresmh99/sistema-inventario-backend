@@ -22,7 +22,7 @@ import fileUpload from '../libs/fileUploads'
 
 const router: Router = Router();
 
-router.get("/productos", [authJwt.TokenValidation], obtenerProductos);
+router.get("/productos", obtenerProductos);
 router.get("/productos/buscar", [authJwt.TokenValidation], filtroProducto);
 router.get("/productos/:id", [authJwt.TokenValidation], obtenerProductoPorId);
 router.post(
