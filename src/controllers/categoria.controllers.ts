@@ -10,8 +10,9 @@ export const obtenerCategorias = async (req: Request, res: Response) => {
       //skip: skip,
       //take: pageSize,
       orderBy: { nombreCategoria: "asc" },
+      include:{ productos: false, _count: true },
+      
     });
-    
 
     if (categorias) {
       return res.status(200).json({
@@ -133,6 +134,41 @@ export const eliminarCategoria = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params["id"]);
 
+    // Buscar la categoría que se va a eliminar
+    const categoriaAEliminar = await prisma.categoria.findUnique({
+      where: { id: id },
+    });
+
+    if (!categoriaAEliminar) {
+      return res
+        .status(404)
+        .json({ ok: false, msj: "Categoría no encontrada" });
+    } else if (categoriaAEliminar.id === 1) {
+      return res
+        .status(500)
+        .json({
+          ok: false,
+          msj: "No se puede eliminar la categoría por defecto",
+        });
+    }
+
+    // Buscar los productos asociados a la categoría que se eliminará
+    const productos = await prisma.producto.findMany({
+      where: { idCategoria: id },
+    });
+
+    // Actualizar los productos cambiando su categoría a la categoría predeterminada sin categoría (id = 0)
+    await Promise.all(
+      productos.map(async (producto) => {
+        await prisma.producto.update({
+          where: { id: producto.id },
+          data: {
+            idCategoria: 1, // ID de la categoría sin categoría
+          },
+        });
+      })
+    );
+
     const categoria = await prisma.categoria.delete({ where: { id: id } });
 
     if (categoria) {
@@ -147,6 +183,7 @@ export const eliminarCategoria = async (req: Request, res: Response) => {
       msj: "No se ha podido completar la acción, por favor intente de nuevo",
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ msj: "Ha Habido un error", error });
   }
 };

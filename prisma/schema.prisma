@@ -47,11 +47,13 @@ model Producto {
   precioCompra Float
   marca String 
   stock Int 
-  imagen String ?
+  public_image_id String 
+  secure_image_url String
   idCategoria Int 
   categoria Categoria @relation(fields: [idCategoria], references: [id])
   ventas Venta[]
 }
+
 
 model Transaccion {
   id Int @id @default(autoincrement())

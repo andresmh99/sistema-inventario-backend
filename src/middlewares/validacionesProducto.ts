@@ -95,7 +95,6 @@ export const validarCamposRequeridos = async (
     nombreProducto: "Nombre del Producto",
     sku: "SKU",
     marca: "Marca",
-    categoria: "ID de Categoría",
   };
 
   const camposFaltantes = [];
@@ -123,7 +122,7 @@ export const validarCamposRequeridos = async (
   }
 
   // Validar que el ID de la categoría exista en la base de datos
-  const idCategoria = parseInt(req.body.categoria);
+  const idCategoria = req.body.categoria ? parseInt(req.body.categoria) : 1
   const categoriaExistente = await prisma.categoria.findUnique({
     where: { id: idCategoria },
   });

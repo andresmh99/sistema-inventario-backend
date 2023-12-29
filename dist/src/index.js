@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const path_1 = __importDefault(require("path"));
 const morgan_1 = __importDefault(require("morgan"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -36,8 +35,6 @@ server.app.use(helmet_1.default.crossOriginResourcePolicy({ policy: "cross-origi
 //Midellweres
 server.app.use((0, morgan_1.default)("dev"));
 server.app.use(express_1.default.json());
-//Multer
-server.app.use("/uploads", express_1.default.static(path_1.default.resolve("uploads")));
 //Server initialization
 server.Start(() => {
     console.log(`Servidor corriendo en el puerto: ${server.port}`);

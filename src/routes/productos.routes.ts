@@ -1,7 +1,6 @@
 import { Router } from "express";
-import multer from "../libs/multer";
+//import multer from "../libs/multer";
 import {
-  actualizarImagen,
   actualizarProducto,
   actualizarStock,
   crearProducto,
@@ -17,6 +16,9 @@ import {
   validarCamposRequeridos,
 } from "../middlewares/validacionesProducto";
 import { authJwt } from "../middlewares";
+import fileUpload from '../libs/fileUploads'
+;
+
 
 const router: Router = Router();
 
@@ -26,7 +28,7 @@ router.get("/productos/:id", [authJwt.TokenValidation], obtenerProductoPorId);
 router.post(
   "/productos",
   [
-    multer.single("imagen"),
+    fileUpload,
     authJwt.TokenValidation,
     validarCamposRequeridos,
     validarCampoUnicoEnBD,
@@ -47,8 +49,7 @@ router.put(
 );
 router.put(
   "/productos/actualizarImagen/:id",
-  [multer.single("imagen"), authJwt.TokenValidation],
-  actualizarImagen
+  [ authJwt.TokenValidation],
 );
 
 export default router;

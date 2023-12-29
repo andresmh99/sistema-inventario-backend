@@ -1,5 +1,4 @@
 import express from "express";
-import path from "path";
 import morgan from "morgan";
 import bodyParser from "body-parser";
 import helmet from "helmet";
@@ -9,6 +8,7 @@ import authRoutes from "./routes/auth.routes";
 import categoriasRoutes from "./routes/categorias.routes";
 import productosRoutes from "./routes/productos.routes";
 import rolesRoutes from "./routes/roles.routes";
+
 
 const server = new Server();
 
@@ -43,8 +43,7 @@ server.app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 //Midellweres
 server.app.use(morgan("dev"));
 server.app.use(express.json());
-//Multer
-server.app.use("/uploads", express.static(path.resolve("uploads")));
+
 //Server initialization
 server.Start(() => {
   console.log(`Servidor corriendo en el puerto: ${server.port}`);

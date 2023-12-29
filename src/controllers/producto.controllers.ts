@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../database/database";
-import path from "path";
-import fs from "fs-extra";
 import { eliminarImagen } from "../middlewares/validacionesProducto";
+import { uploadsImage, deleteImage } from "../libs/cloudinary";
 
 export const obtenerProductos = async (req: Request, res: Response) => {
   const page: number = Number(req.query.page) || 1;
@@ -71,13 +70,24 @@ export const crearProducto = async (req: Request, res: Response) => {
       precioCompra: parseFloat(req.body.precioCompra),
       marca: req.body.marca,
       stock: parseInt(req.body.stock),
-      imagen: req.file?.path,
-      idCategoria: parseInt(req.body.categoria),
+      public_image_id: "",
+      secure_image_url: "",
+      idCategoria: req.body.categoria ? parseInt(req.body.categoria) : 1,
     };
 
-    const producto = await prisma.producto.create({ data });
+    if (req.files?.imagen) {
+      const file: any = req.files?.imagen;
+      const result = await uploadsImage(file.tempFilePath);
+      data.public_image_id = result.public_id;
+      data.secure_image_url = result.secure_url;
+      eliminarImagen(file.tempFilePath);
+    }
+
+    const producto = await prisma.producto.create({
+      data,
+      include: { categoria: true },
+    });
     if (!producto) {
-      eliminarImagen(req.file?.path);
       return res.status(500).json({
         ok: false,
         msj: "El producto no pudo ser registrado. Por favor, intente nuevamente.",
@@ -128,7 +138,7 @@ export const actualizarProducto = async (req: Request, res: Response) => {
     });
   }
 };
-export const actualizarImagen = async (req: Request, res: Response) => {
+/*export const actualizarImagen = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params["id"]);
     const imagen = req.file?.path;
@@ -159,7 +169,7 @@ export const actualizarImagen = async (req: Request, res: Response) => {
       error,
     });
   }
-};
+};*/
 export const eliminarProducto = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params["id"]);
@@ -173,6 +183,10 @@ export const eliminarProducto = async (req: Request, res: Response) => {
       if (producto.imagen) {
         await fs.unlink(path.resolve(producto.imagen));
       }*/
+      if(producto.public_image_id){
+        await deleteImage(producto.public_image_id);
+      }
+
       return res.status(200).json({
         ok: true,
         msj: "Producto " + producto.nombreProducto + " Eliminado exitosamente",

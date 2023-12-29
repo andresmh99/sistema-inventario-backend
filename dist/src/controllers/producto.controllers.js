@@ -1,13 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.filtroProducto = exports.actualizarStock = exports.eliminarProducto = exports.actualizarImagen = exports.actualizarProducto = exports.crearProducto = exports.obtenerProductoPorId = exports.obtenerProductos = void 0;
+exports.filtroProducto = exports.actualizarStock = exports.eliminarProducto = exports.actualizarProducto = exports.crearProducto = exports.obtenerProductoPorId = exports.obtenerProductos = void 0;
 const database_1 = require("../database/database");
-const path_1 = __importDefault(require("path"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
 const validacionesProducto_1 = require("../middlewares/validacionesProducto");
+const cloudinary_1 = require("../libs/cloudinary");
 const obtenerProductos = async (req, res) => {
     const page = Number(req.query.page) || 1;
     const pageSize = 10;
@@ -72,12 +68,22 @@ const crearProducto = async (req, res) => {
             precioCompra: parseFloat(req.body.precioCompra),
             marca: req.body.marca,
             stock: parseInt(req.body.stock),
-            imagen: (_a = req.file) === null || _a === void 0 ? void 0 : _a.path,
-            idCategoria: parseInt(req.body.categoria),
+            public_image_id: "",
+            secure_image_url: "",
+            idCategoria: req.body.categoria ? parseInt(req.body.categoria) : 1,
         };
-        const producto = await database_1.prisma.producto.create({ data });
+        if ((_a = req.files) === null || _a === void 0 ? void 0 : _a.imagen) {
+            const file = (_b = req.files) === null || _b === void 0 ? void 0 : _b.imagen;
+            const result = await (0, cloudinary_1.uploadsImage)(file.tempFilePath);
+            data.public_image_id = result.public_id;
+            data.secure_image_url = result.secure_url;
+            (0, validacionesProducto_1.eliminarImagen)(file.tempFilePath);
+        }
+        const producto = await database_1.prisma.producto.create({
+            data,
+            include: { categoria: true },
+        });
         if (!producto) {
-            (0, validacionesProducto_1.eliminarImagen)((_b = req.file) === null || _b === void 0 ? void 0 : _b.path);
             return res.status(500).json({
                 ok: false,
                 msj: "El producto no pudo ser registrado. Por favor, intente nuevamente.",
@@ -135,39 +141,38 @@ const actualizarProducto = async (req, res) => {
     }
 };
 exports.actualizarProducto = actualizarProducto;
-const actualizarImagen = async (req, res) => {
-    var _a;
-    try {
-        const id = parseInt(req.params["id"]);
-        const imagen = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path;
-        const exists = await database_1.prisma.producto.findFirst({ where: { id: id } });
-        if (exists === null || exists === void 0 ? void 0 : exists.imagen) {
-            const imagePath = path_1.default.resolve("./" + (exists === null || exists === void 0 ? void 0 : exists.imagen));
-            if (fs_extra_1.default.existsSync(imagePath)) {
-                await fs_extra_1.default.unlink(imagePath);
-            }
-        }
-        const producto = await database_1.prisma.producto.update({
-            where: { id: id },
-            data: { imagen: imagen },
-        });
-        if (producto) {
-            return res.status(200).json({
-                ok: true,
-                producto,
-                msj: "El producto actualizado exitosamente",
-            });
-        }
+/*export const actualizarImagen = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params["id"]);
+    const imagen = req.file?.path;
+
+    const exists = await prisma.producto.findFirst({ where: { id: id } });
+    if (exists?.imagen) {
+      const imagePath = path.resolve("./" + exists?.imagen);
+      if (fs.existsSync(imagePath)) {
+        await fs.unlink(imagePath);
+      }
     }
-    catch (error) {
-        return res.status(500).send({
-            ok: false,
-            msj: "Error en el servidor",
-            error,
-        });
+    const producto = await prisma.producto.update({
+      where: { id: id },
+      data: { imagen: imagen },
+    });
+
+    if (producto) {
+      return res.status(200).json({
+        ok: true,
+        producto,
+        msj: "El producto actualizado exitosamente",
+      });
     }
-};
-exports.actualizarImagen = actualizarImagen;
+  } catch (error) {
+    return res.status(500).send({
+      ok: false,
+      msj: "Error en el servidor",
+      error,
+    });
+  }
+};*/
 const eliminarProducto = async (req, res) => {
     try {
         const id = parseInt(req.params["id"]);
@@ -179,6 +184,9 @@ const eliminarProducto = async (req, res) => {
             if (producto.imagen) {
               await fs.unlink(path.resolve(producto.imagen));
             }*/
+            if (producto.public_image_id) {
+                await (0, cloudinary_1.deleteImage)(producto.public_image_id);
+            }
             return res.status(200).json({
                 ok: true,
                 msj: "Producto " + producto.nombreProducto + " Eliminado exitosamente",
