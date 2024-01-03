@@ -28,7 +28,7 @@ const obtenerUsuarios = async (req, res) => {
                 },
             },
             orderBy: { nombre: "asc" },
-            skip,
+            skip, // Saltar registros en función de la página
             take: pageSize, // Tomar una cantidad específica de registros por página
         });
         const totalCount = await database_1.prisma.usuario.count();

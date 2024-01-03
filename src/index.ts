@@ -9,7 +9,6 @@ import categoriasRoutes from "./routes/categorias.routes";
 import productosRoutes from "./routes/productos.routes";
 import rolesRoutes from "./routes/roles.routes";
 
-
 const server = new Server();
 
 server.app.use(function (req, res, next) {
@@ -37,7 +36,9 @@ server.app.use(function (req, res, next) {
 
 //Settings
 server.app.use(bodyParser.json());
-server.app.use(bodyParser.urlencoded({ extended: true }));
+server.app.use(
+  express.urlencoded({ extended: true, limit: 10000, parameterLimit: 100 })
+);
 server.app.use(helmet());
 server.app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 //Midellweres

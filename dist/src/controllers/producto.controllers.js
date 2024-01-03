@@ -78,7 +78,9 @@ const crearProducto = async (req, res) => {
             const result = await (0, cloudinary_1.uploadsImage)(file.tempFilePath);
             data.public_image_id = result.public_id;
             data.secure_image_url = result.secure_url;
-            (0, validacionesProducto_1.eliminarImagen)(file.tempFilePath);
+            if (file) {
+                (0, validacionesProducto_1.eliminarImagen)(file.tempFilePath);
+            }
         }
         const producto = await database_1.prisma.producto.create({
             data,

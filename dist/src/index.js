@@ -29,7 +29,7 @@ server.app.use(function (req, res, next) {
 });
 //Settings
 server.app.use(body_parser_1.default.json());
-server.app.use(body_parser_1.default.urlencoded({ extended: true }));
+server.app.use(express_1.default.urlencoded({ extended: true, limit: 10000, parameterLimit: 100 }));
 server.app.use((0, helmet_1.default)());
 server.app.use(helmet_1.default.crossOriginResourcePolicy({ policy: "cross-origin" }));
 //Midellweres

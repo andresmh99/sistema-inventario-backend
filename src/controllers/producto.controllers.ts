@@ -74,14 +74,16 @@ export const crearProducto = async (req: Request, res: Response) => {
       public_image_id: "",
       secure_image_url: "",
       idCategoria: req.body.categoria ? parseInt(req.body.categoria) : 1,
-    };
+    };   
 
     if (req.files?.imagen) {
       const file: any = req.files?.imagen;
       const result = await uploadsImage(file.tempFilePath);
       data.public_image_id = result.public_id;
       data.secure_image_url = result.secure_url;
-      eliminarImagen(file.tempFilePath);
+      if(file){
+        eliminarImagen(file.tempFilePath);
+      }
     }
 
     const producto = await prisma.producto.create({
