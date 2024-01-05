@@ -8,8 +8,8 @@ const database_1 = require("../database/database");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const iniciarSesion = async (req, res) => {
-    const email = req.body.email;
-    const nombreUsuario = req.body.nombreUsuario;
+    const email = req.body.usuario;
+    const nombreUsuario = req.body.usuario;
     const password = req.body.password;
     try {
         const usuario = await database_1.prisma.usuario.findFirst({

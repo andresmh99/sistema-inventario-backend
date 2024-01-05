@@ -10,6 +10,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+model Rol {
+  id Int @id @default(autoincrement()) 
+  nombreRol String @unique
+  usuarios Usuario[]
+  
+}
+model Categoria {
+  id Int @id @default(autoincrement())
+  nombreCategoria String @unique
+  descripcion String ?
+  productos Producto[]
+}
+model Proveedor{
+  id Int @id @default(autoincrement())
+  nombre String @unique 
+  telefono String ?
+  email String ?
+  direccion String ?
+  contacto  String ?
+  compras Compra[]
+}
+model Cliente{
+  id Int @id @default(autoincrement())
+  run String @unique
+  nombre String  
+  telefono String ?
+  email String ?
+  ventas Venta[]
+}
+model Metodo_pago {
+  id Int @id @default(autoincrement())
+  nombre String
+  montoVentas MontoVenta[]
+}
+model Gasto {
+  id Int @id @default(autoincrement()) 
+  monto Float @default(0)
+}
 model Usuario {
   id Int @id @default(autoincrement())
   nombreUsuario String @unique
@@ -21,23 +60,9 @@ model Usuario {
   password String 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  transacciones Transaccion[] 
-
+  ventas Venta[]
+  cajas Caja[]
 }
-
-model Rol {
-  id Int @id @default(autoincrement()) 
-  nombreRol String @unique
-  usuarios Usuario[]
-}
-
-model Categoria {
-  id Int @id @default(autoincrement())
-  nombreCategoria String @unique
-  descripcion String
-  productos Producto[]
-}
-
 model Producto {
   id Int @id @default(autoincrement())
   nombreProducto String @unique
@@ -51,38 +76,60 @@ model Producto {
   secure_image_url String
   idCategoria Int 
   categoria Categoria @relation(fields: [idCategoria], references: [id])
-  ventas Venta[]
+  compras Compra[]
+  detalleVentas DetalleVenta[]
 }
 
-
-model Transaccion {
+model Compra{
   id Int @id @default(autoincrement())
+  precio Float
   fecha DateTime @default(now())
-  idUsuario Int
-  usuario Usuario @relation(fields: [idUsuario], references:[id])
-  ventas Venta[]
-  gastos Gasto[]
+  cantidad Int
+  idProducto Int
+  producto Producto @relation(fields: [idProducto], references: [id])
+  idProveedor Int
+  proveedor Proveedor @relation(fields:[idProveedor], references: [id])
 }
-model Gasto {
-  id Int @id @default(autoincrement()) 
-  monto Float 
-  idTransaccion Int
-  transaccion Transaccion @relation(fields: [idTransaccion], references: [id])
-}
+
 
 model Venta {
   id Int @id @default(autoincrement())
-  idProducto Int 
+  montoTotal Float
+  fecha DateTime @default(now())
+  idUsuario Int
+  idCliente Int
+  cliente Cliente @relation(fields: [idCliente], references: [id])
+  usuario Usuario @relation(fields: [idUsuario], references: [id])
+  detalleVentas DetalleVenta[]
+  montoVentas MontoVenta[]
+}
+model DetalleVenta{
+  id Int @id @default(autoincrement())
+  cantidad Int @default(0)
+  idVenta Int
+  idProducto Int
+  venta Venta @relation(fields: [idVenta], references: [id])
   producto Producto @relation(fields: [idProducto], references: [id])
-  cantidad Int
+  
+}
+model MontoVenta{
+  id Int @id @default(autoincrement())
+  monto Float @default(0)
+  idVenta Int
   idMetodoPago Int
-  metodoPago Metodo_pago @relation(fields: [idMetodoPago], references: [id])
-  idTransaccion Int
-  transaccion Transaccion @relation(fields: [idTransaccion], references: [id])
+  venta Venta @relation(fields: [idVenta], references:[id])
+  metodoPago Metodo_pago @relation(fields: [idMetodoPago], references:[id])
 }
 
-model Metodo_pago {
+
+model Caja{
   id Int @id @default(autoincrement())
-  nombre String
-  ventas Venta[]
+  fecha DateTime @default(now())
+  idUsuario Int
+  estado Boolean
+  montoInicial Float @default(0)
+  montoActual Float @default(0)
+  MontoCierre Float @default(0)
+  comentarios String ?
+  usuario Usuario @relation(fields: [idUsuario], references: [id])
 }

@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const middlewares_1 = require("../middlewares");
+const clientes_controller_1 = require("../controllers/clientes.controller");
+const router = (0, express_1.Router)();
+router.post('/clientes', clientes_controller_1.crearCliente);
+router.get('/clientes', clientes_controller_1.obtenerClientes);
+router.get("/clientes/buscar", [middlewares_1.authJwt.TokenValidation], clientes_controller_1.filtroClientes);
+router.get('/clientes/:id', clientes_controller_1.obtenerCliente);
+router.put('/clientes/:id', clientes_controller_1.actualizarCliente);
+//router.delete('/clientes/:id', eliminarclientes);
+exports.default = router;

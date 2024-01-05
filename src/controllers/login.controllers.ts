@@ -4,8 +4,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const iniciarSesion = async (req: Request, res: Response) => {
-  const email = req.body.email;
-  const nombreUsuario = req.body.nombreUsuario;
+  const email = req.body.usuario;
+  const nombreUsuario = req.body.usuario;
   const password = req.body.password;
   try {
     const usuario = await prisma.usuario.findFirst({

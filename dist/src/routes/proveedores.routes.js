@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const middlewares_1 = require("../middlewares");
+const proveedor_controller_1 = require("../controllers/proveedor.controller");
+const router = (0, express_1.Router)();
+router.post('/proveedor', proveedor_controller_1.crearProveedor);
+router.get('/proveedor', proveedor_controller_1.obtenerProveedores);
+router.get("/proveedor/buscar", [middlewares_1.authJwt.TokenValidation], proveedor_controller_1.filtroProveedor);
+router.get('/proveedor/:id', proveedor_controller_1.obtenerProveedor);
+router.put('/proveedor/:id', proveedor_controller_1.actualizarProveedor);
+router.delete('/proveedor/:id', proveedor_controller_1.eliminarProveedor);
+exports.default = router;

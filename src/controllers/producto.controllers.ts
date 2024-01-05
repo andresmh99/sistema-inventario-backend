@@ -84,6 +84,9 @@ export const crearProducto = async (req: Request, res: Response) => {
       if(file){
         eliminarImagen(file.tempFilePath);
       }
+    }else{
+      data.secure_image_url = 'https://res.cloudinary.com/dkwb24r3o/image/upload/v1704253293/sistema-Inventario/oth8x2gyqltcr2sxbrxb.png';
+      
     }
 
     const producto = await prisma.producto.create({

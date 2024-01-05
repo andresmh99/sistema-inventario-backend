@@ -8,6 +8,14 @@ import authRoutes from "./routes/auth.routes";
 import categoriasRoutes from "./routes/categorias.routes";
 import productosRoutes from "./routes/productos.routes";
 import rolesRoutes from "./routes/roles.routes";
+import proveedoresRoutes from './routes/proveedores.routes';
+import clientesRoutes from './routes/clientes.routes';
+import {
+  crearCategoriaInicial,
+  crearMetodosDePago,
+  crearProveedorInicial,
+  crearRoles,
+} from "./libs/setUpInicial";
 
 const server = new Server();
 
@@ -33,6 +41,11 @@ server.app.use(function (req, res, next) {
   // Pass to next layer of middleware
   next();
 });
+//setUp Inicial
+crearRoles();
+crearCategoriaInicial();
+crearProveedorInicial();
+crearMetodosDePago();
 
 //Settings
 server.app.use(bodyParser.json());
@@ -55,3 +68,6 @@ server.app.use("/", authRoutes);
 server.app.use("/", categoriasRoutes);
 server.app.use("/", productosRoutes);
 server.app.use("/", rolesRoutes);
+server.app.use("/", proveedoresRoutes);
+server.app.use("/", clientesRoutes);
+
