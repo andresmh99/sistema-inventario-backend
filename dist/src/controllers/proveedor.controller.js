@@ -34,7 +34,7 @@ const obtenerProveedores = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ msj: "Ha Habido un error", error });
+        return res.status(500).json({ ok: false, msj: "Ha Habido un error", error });
     }
 };
 exports.obtenerProveedores = obtenerProveedores;
