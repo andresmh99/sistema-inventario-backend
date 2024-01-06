@@ -34,7 +34,9 @@ const obtenerProveedores = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ ok: false, msj: "Ha Habido un error", error });
+        return res
+            .status(500)
+            .json({ ok: false, msj: "Ha Habido un error", error });
     }
 };
 exports.obtenerProveedores = obtenerProveedores;
@@ -54,7 +56,9 @@ const obtenerProveedor = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ msj: "Ha Habido un error", error });
+        return res
+            .status(500)
+            .json({ ok: false, msj: "Ha Habido un error", error });
     }
 };
 exports.obtenerProveedor = obtenerProveedor;
@@ -90,7 +94,9 @@ const crearProveedor = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ msj: "Ha Habido un error", error });
+        return res
+            .status(500)
+            .json({ ok: false, msj: "Ha Habido un error", error });
     }
 };
 exports.crearProveedor = crearProveedor;
@@ -127,7 +133,9 @@ const actualizarProveedor = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(404).json({ msj: "No se ha encontrado registro", error });
+        return res
+            .status(404)
+            .json({ ok: false, msj: "No se ha encontrado registro", error });
     }
 };
 exports.actualizarProveedor = actualizarProveedor;
@@ -144,9 +152,7 @@ const eliminarProveedor = async (req, res) => {
                 .json({ ok: false, msj: "Proveedor no encontrado" });
         }
         else if (proveedorAEliminar.id === 1) {
-            return res
-                .status(500)
-                .json({
+            return res.status(500).json({
                 ok: false,
                 msj: "No se puede eliminar el Proveedor por defecto",
             });
@@ -178,7 +184,9 @@ const eliminarProveedor = async (req, res) => {
     }
     catch (error) {
         console.log(error);
-        return res.status(500).json({ msj: "Ha Habido un error", error });
+        return res
+            .status(500)
+            .json({ ok: false, msj: "Ha Habido un error", error });
     }
 };
 exports.eliminarProveedor = eliminarProveedor;

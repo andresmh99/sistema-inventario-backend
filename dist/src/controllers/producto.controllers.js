@@ -29,7 +29,6 @@ const obtenerProductos = async (req, res) => {
         });
     }
     catch (error) {
-        console.log(error);
         return res.status(500).json({ msj: "Error en el servidor", error });
     }
 };

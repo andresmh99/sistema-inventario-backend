@@ -38,7 +38,7 @@ export const obtenerProveedores = async (req: Request, res: Response) => {
   } catch (error) {
     return res
       .status(500)
-      .send({ ok: false, msj: "Ha Habido un error", error });
+      .json({ ok: false, msj: "Ha Habido un error", error });
   }
 };
 
