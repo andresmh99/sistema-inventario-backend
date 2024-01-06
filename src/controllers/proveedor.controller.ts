@@ -10,8 +10,7 @@ export const obtenerProveedores = async (req: Request, res: Response) => {
       skip: skip,
       take: pageSize,
       orderBy: { nombre: "asc" },
-      include:{ compras: false, _count: true },
-      
+      include: { compras: false, _count: true },
     });
 
     const totalCount = await prisma.proveedor.count();
@@ -37,7 +36,9 @@ export const obtenerProveedores = async (req: Request, res: Response) => {
       proveedores: [],
     });
   } catch (error) {
-    return res.status(500).json({ ok:false, msj: "Ha Habido un error", error });
+    return res
+      .status(500)
+      .send({ ok: false, msj: "Ha Habido un error", error });
   }
 };
 
@@ -59,7 +60,9 @@ export const obtenerProveedor = async (req: Request, res: Response) => {
       msj: "El registro indicado no existe, por favor intente nuevamente",
     });
   } catch (error) {
-    return res.status(500).json({ msj: "Ha Habido un error", error });
+    return res
+      .status(500)
+      .json({ ok: false, msj: "Ha Habido un error", error });
   }
 };
 
@@ -98,7 +101,9 @@ export const crearProveedor = async (req: Request, res: Response) => {
       msj: "El proveedor ingresado ya existe, por favor ingrese un nombre diferente",
     });
   } catch (error) {
-    return res.status(500).json({ msj: "Ha Habido un error", error });
+    return res
+      .status(500)
+      .json({ ok: false, msj: "Ha Habido un error", error });
   }
 };
 
@@ -135,7 +140,9 @@ export const actualizarProveedor = async (req: Request, res: Response) => {
       msj: "El registro indicado no existe, por favor intente nuevamente",
     });
   } catch (error) {
-    return res.status(404).json({ msj: "No se ha encontrado registro", error });
+    return res
+      .status(404)
+      .json({ ok: false, msj: "No se ha encontrado registro", error });
   }
 };
 
@@ -153,12 +160,10 @@ export const eliminarProveedor = async (req: Request, res: Response) => {
         .status(404)
         .json({ ok: false, msj: "Proveedor no encontrado" });
     } else if (proveedorAEliminar.id === 1) {
-      return res
-        .status(500)
-        .json({
-          ok: false,
-          msj: "No se puede eliminar el Proveedor por defecto",
-        });
+      return res.status(500).json({
+        ok: false,
+        msj: "No se puede eliminar el Proveedor por defecto",
+      });
     }
 
     // Buscar las compras asociados a el proveedor que se eliminará
@@ -183,8 +188,7 @@ export const eliminarProveedor = async (req: Request, res: Response) => {
     if (proveedor) {
       return res.status(200).json({
         ok: true,
-        msj:
-          "proveedor " + proveedor.nombre + " Eliminada exitosamente",
+        msj: "proveedor " + proveedor.nombre + " Eliminada exitosamente",
       });
     }
     return res.status(403).send({
@@ -193,7 +197,9 @@ export const eliminarProveedor = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ msj: "Ha Habido un error", error });
+    return res
+      .status(500)
+      .json({ ok: false, msj: "Ha Habido un error", error });
   }
 };
 export const filtroProveedor = async (req: Request, res: Response) => {
