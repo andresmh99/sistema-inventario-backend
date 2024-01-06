@@ -76,21 +76,26 @@ model Producto {
   secure_image_url String
   idCategoria Int 
   categoria Categoria @relation(fields: [idCategoria], references: [id])
-  compras Compra[]
+  detalleCompra detalleCompra[]
   detalleVentas DetalleVenta[]
 }
 
 model Compra{
   id Int @id @default(autoincrement())
-  precio Float
+  montoTotal Float
   fecha DateTime @default(now())
-  cantidad Int
-  idProducto Int
-  producto Producto @relation(fields: [idProducto], references: [id])
   idProveedor Int
   proveedor Proveedor @relation(fields:[idProveedor], references: [id])
+  detalleCompra detalleCompra[]
 }
-
+model detalleCompra{
+  id Int @id @default(autoincrement())
+  cantidad Int
+  idProducto Int
+  idCompra Int
+  producto Producto @relation(fields: [idProducto], references: [id])
+  compra Compra @relation(fields:[idCompra], references: [id])
+}
 
 model Venta {
   id Int @id @default(autoincrement())

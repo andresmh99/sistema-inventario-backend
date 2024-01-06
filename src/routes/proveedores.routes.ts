@@ -4,11 +4,11 @@ import { actualizarProveedor, crearProveedor, eliminarProveedor, filtroProveedor
 
 const router: Router = Router();
 
-router.post('/proveedor',crearProveedor );
-router.get('/proveedor',obtenerProveedores);
-router.get("/proveedor/buscar", [authJwt.TokenValidation], filtroProveedor);
-router.get('/proveedor/:id', obtenerProveedor);
-router.put('/proveedor/:id',actualizarProveedor);
-router.delete('/proveedor/:id', eliminarProveedor);
+router.post('/proveedores',crearProveedor );
+router.get('/proveedores',obtenerProveedores);
+router.get("/proveedores/buscar", [authJwt.TokenValidation], filtroProveedor);
+router.get('/proveedores/:id', obtenerProveedor);
+router.put('/proveedores/:id',actualizarProveedor);
+router.delete('/proveedores/:id', eliminarProveedor);
 
 export default router;

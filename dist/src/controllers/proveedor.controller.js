@@ -13,9 +13,16 @@ const obtenerProveedores = async (req, res) => {
             orderBy: { nombre: "asc" },
             include: { compras: false, _count: true },
         });
+        const totalCount = await database_1.prisma.proveedor.count();
+        const pageCount = Math.ceil(totalCount / pageSize);
+        const info = {
+            count: totalCount,
+            pages: pageCount,
+        };
         if (proveedores) {
             return res.status(200).json({
                 ok: true,
+                info,
                 msj: "",
                 proveedores,
             });

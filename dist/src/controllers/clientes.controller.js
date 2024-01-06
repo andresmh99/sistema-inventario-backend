@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.filtroClientes = exports.actualizarCliente = exports.crearCliente = exports.obtenerCliente = exports.obtenerClientes = void 0;
+exports.filtroClientes = exports.eliminarCliente = exports.actualizarCliente = exports.crearCliente = exports.obtenerCliente = exports.obtenerClientes = void 0;
 const database_1 = require("../database/database");
 const obtenerClientes = async (req, res) => {
     const page = Number(req.query.page) || 1;
@@ -10,7 +10,7 @@ const obtenerClientes = async (req, res) => {
         const clientes = await database_1.prisma.cliente.findMany({
             skip: skip,
             take: pageSize,
-            orderBy: { nombre: "asc" }
+            orderBy: { nombre: "asc" },
         });
         if (clientes) {
             return res.status(200).json({
@@ -123,63 +123,57 @@ const actualizarCliente = async (req, res) => {
     }
 };
 exports.actualizarCliente = actualizarCliente;
-/*export const eliminarcliente = async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params["id"]);
-
-    // Buscar El Cliente que se va a eliminar
-    const clienteAEliminar = await prisma.cliente.findUnique({
-      where: { id: id },
-    });
-
-    if (!clienteAEliminar) {
-      return res
-        .status(404)
-        .json({ ok: false, msj: "cliente no encontrado" });
-    } else if (clienteAEliminar.id === 1) {
-      return res
-        .status(500)
-        .json({
-          ok: false,
-          msj: "No se puede eliminar el cliente por defecto",
+const eliminarCliente = async (req, res) => {
+    try {
+        const id = parseInt(req.params["id"]);
+        // Buscar El Cliente que se va a eliminar
+        const clienteAEliminar = await database_1.prisma.cliente.findUnique({
+            where: { id: id },
+        });
+        if (!clienteAEliminar) {
+            return res
+                .status(404)
+                .json({ ok: false, msj: "cliente no encontrado" });
+        }
+        else if (clienteAEliminar.id === 1) {
+            return res
+                .status(500)
+                .json({
+                ok: false,
+                msj: "No se puede eliminar el cliente por defecto",
+            });
+        }
+        // Buscar los productos asociados a El Cliente que se eliminará
+        const ventas = await database_1.prisma.venta.findMany({
+            where: { idCliente: id },
+        });
+        // Actualizar los productos cambiando su cliente a El Cliente predeterminada sin cliente (id = 0)
+        await Promise.all(ventas.map(async (venta) => {
+            await database_1.prisma.venta.update({
+                where: { id: venta.id },
+                data: {
+                    idCliente: 1, // ID de El Cliente sin cliente
+                },
+            });
+        }));
+        const cliente = await database_1.prisma.cliente.delete({ where: { id: id } });
+        if (cliente) {
+            return res.status(200).json({
+                ok: true,
+                msj: "Cliente " + cliente.nombre + " Eliminado exitosamente",
+            });
+        }
+        return res.status(403).send({
+            ok: false,
+            msj: "No se ha podido completar la acción, por favor intente de nuevo",
         });
     }
-
-    // Buscar los productos asociados a El Cliente que se eliminará
-    const compras = await prisma.compra.findMany({
-      where: { idcliente: id },
-    });
-
-    // Actualizar los productos cambiando su cliente a El Cliente predeterminada sin cliente (id = 0)
-    await Promise.all(
-      compras.map(async (compra) => {
-        await prisma.compra.update({
-          where: { id: compra.id },
-          data: {
-            idcliente: 1, // ID de El Cliente sin cliente
-          },
-        });
-      })
-    );
-
-    const cliente = await prisma.cliente.delete({ where: { id: id } });
-
-    if (cliente) {
-      return res.status(200).json({
-        ok: true,
-        msj:
-          "cliente " + cliente.nombre + " Eliminada exitosamente",
-      });
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ msj: "Ha Habido un error", error });
     }
-    return res.status(403).send({
-      ok: false,
-      msj: "No se ha podido completar la acción, por favor intente de nuevo",
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ msj: "Ha Habido un error", error });
-  }
-};*/
+};
+exports.eliminarCliente = eliminarCliente;
 const filtroClientes = async (req, res) => {
     const page = Number(req.query.page) || 1;
     const pageSize = 10;
@@ -188,7 +182,10 @@ const filtroClientes = async (req, res) => {
         const data = req.query["s"];
         const clientes = await database_1.prisma.cliente.findMany({
             where: {
-                OR: [{ nombre: { startsWith: data, mode: "insensitive" } }],
+                OR: [
+                    { nombre: { startsWith: data, mode: "insensitive" } },
+                    { run: { startsWith: data, mode: "insensitive" } },
+                ],
             },
             skip: skip,
             take: pageSize,

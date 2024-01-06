@@ -9,5 +9,5 @@ router.get('/clientes', clientes_controller_1.obtenerClientes);
 router.get("/clientes/buscar", [middlewares_1.authJwt.TokenValidation], clientes_controller_1.filtroClientes);
 router.get('/clientes/:id', clientes_controller_1.obtenerCliente);
 router.put('/clientes/:id', clientes_controller_1.actualizarCliente);
-//router.delete('/clientes/:id', eliminarclientes);
+router.delete('/clientes/:id', clientes_controller_1.eliminarCliente);
 exports.default = router;

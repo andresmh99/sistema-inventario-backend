@@ -9,7 +9,7 @@ export const obtenerClientes = async (req: Request, res: Response) => {
     const clientes = await prisma.cliente.findMany({
       skip: skip,
       take: pageSize,
-      orderBy: { nombre: "asc" }
+      orderBy: { nombre: "asc" },
     });
 
     if (clientes) {
@@ -128,7 +128,7 @@ export const actualizarCliente = async (req: Request, res: Response) => {
   }
 };
 
-/*export const eliminarcliente = async (req: Request, res: Response) => {
+export const eliminarCliente = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params["id"]);
 
@@ -151,17 +151,17 @@ export const actualizarCliente = async (req: Request, res: Response) => {
     }
 
     // Buscar los productos asociados a El Cliente que se eliminará
-    const compras = await prisma.compra.findMany({
-      where: { idcliente: id },
+    const ventas = await prisma.venta.findMany({
+      where: { idCliente: id },
     });
 
     // Actualizar los productos cambiando su cliente a El Cliente predeterminada sin cliente (id = 0)
     await Promise.all(
-      compras.map(async (compra) => {
-        await prisma.compra.update({
-          where: { id: compra.id },
+      ventas.map(async (venta) => {
+        await prisma.venta.update({
+          where: { id: venta.id },
           data: {
-            idcliente: 1, // ID de El Cliente sin cliente
+            idCliente: 1, // ID de El Cliente sin cliente
           },
         });
       })
@@ -173,7 +173,7 @@ export const actualizarCliente = async (req: Request, res: Response) => {
       return res.status(200).json({
         ok: true,
         msj:
-          "cliente " + cliente.nombre + " Eliminada exitosamente",
+          "Cliente " + cliente.nombre + " Eliminado exitosamente",
       });
     }
     return res.status(403).send({
@@ -184,7 +184,7 @@ export const actualizarCliente = async (req: Request, res: Response) => {
     console.log(error);
     return res.status(500).json({ msj: "Ha Habido un error", error });
   }
-};*/
+};
 
 export const filtroClientes = async (req: Request, res: Response) => {
   const page: number = Number(req.query.page) || 1;
@@ -194,7 +194,10 @@ export const filtroClientes = async (req: Request, res: Response) => {
     const data = req.query["s"] as string;
     const clientes = await prisma.cliente.findMany({
       where: {
-        OR: [{ nombre: { startsWith: data, mode: "insensitive" } }],
+        OR: [
+          { nombre: { startsWith: data, mode: "insensitive" } },
+          { run: { startsWith: data, mode: "insensitive" } },
+        ],
       },
       skip: skip,
       take: pageSize,

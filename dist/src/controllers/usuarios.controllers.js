@@ -134,7 +134,7 @@ exports.crearUsuario = crearUsuario;
 const actualizarUsuario = async (req, res) => {
     const id = parseInt(req.params.id);
     try {
-        const usuarioActualizadoData = {
+        const data = {
             nombreUsuario: req.body.nombreUsuario,
             nombre: req.body.nombre,
             apellido: req.body.apellido,
@@ -142,9 +142,21 @@ const actualizarUsuario = async (req, res) => {
             password: req.body.password,
             rolId: parseInt(req.body.rolId),
         };
-        if (req.body.password) {
-            const hashedPassword = await bcryptjs_1.default.hash(req.body.password, 10);
-            usuarioActualizadoData.password = hashedPassword;
+        const camposActualizados = {};
+        // Filtrar los campos que no son null, undefined o vacíos
+        for (const key in data) {
+            // Verificar que el valor no sea null, undefined, o una cadena vacía
+            if (data[key] != null && data[key] !== "") {
+                // Verificar si el campo es rolId y no es NaN
+                if (key === "rolId" && isNaN(data[key])) {
+                    continue; // Saltar el campo si es NaN
+                }
+                camposActualizados[key] = data[key];
+            }
+        }
+        if (camposActualizados.password) {
+            const hashedPassword = await bcryptjs_1.default.hash(camposActualizados.password, 10);
+            camposActualizados.password = hashedPassword;
         }
         const existingUserWithUsername = await database_1.prisma.usuario.findFirst({
             where: {
@@ -176,7 +188,7 @@ const actualizarUsuario = async (req, res) => {
         const usuario = await database_1.prisma.usuario.update({
             where: { id: id },
             include: { rol: true },
-            data: usuarioActualizadoData,
+            data: camposActualizados,
         });
         if (!usuario) {
             return res

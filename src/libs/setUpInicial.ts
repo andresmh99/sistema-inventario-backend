@@ -1,3 +1,4 @@
+import { crearUsuario } from "../controllers/usuarios.controllers";
 import { prisma } from "../database/database";
 
 export const crearRoles = async () => {
@@ -58,21 +59,23 @@ export const crearProveedorInicial = async () => {
 };
 
 export const crearMetodosDePago = async () => {
-    try {
-      const count = await prisma.metodo_pago.count();
-  
-      if (count > 0) {
-        return;
-      }
-  
-      const values = await Promise.all([
-        await prisma.metodo_pago.create({ data: { nombre: "Credito" } }),
-        await prisma.metodo_pago.create({ data: { nombre: "Debito" } }),
-        await prisma.metodo_pago.create({ data: { nombre: "Efectivo" } }),
-        await prisma.metodo_pago.create({ data: { nombre: "Transferencia" } }),
-      ]);
-      console.log(values);
-    } catch (error) {
-      console.log(error);
+  try {
+    const count = await prisma.metodo_pago.count();
+
+    if (count > 0) {
+      return;
     }
-  };
+
+    const values = await Promise.all([
+      await prisma.metodo_pago.create({ data: { nombre: "Credito" } }),
+      await prisma.metodo_pago.create({ data: { nombre: "Debito" } }),
+      await prisma.metodo_pago.create({ data: { nombre: "Efectivo" } }),
+      await prisma.metodo_pago.create({ data: { nombre: "Transferencia" } }),
+    ]);
+    console.log(values);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+

@@ -14,9 +14,18 @@ export const obtenerProveedores = async (req: Request, res: Response) => {
       
     });
 
+    const totalCount = await prisma.proveedor.count();
+    const pageCount = Math.ceil(totalCount / pageSize);
+
+    const info = {
+      count: totalCount,
+      pages: pageCount,
+    };
+
     if (proveedores) {
       return res.status(200).json({
         ok: true,
+        info,
         msj: "",
         proveedores,
       });
