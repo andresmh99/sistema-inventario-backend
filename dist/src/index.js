@@ -20,9 +20,18 @@ const ventas_routes_1 = __importDefault(require("./routes/ventas.routes"));
 const montoVenta_routes_1 = __importDefault(require("./routes/montoVenta.routes"));
 const setUpInicial_1 = require("./libs/setUpInicial");
 const server = new server_1.default();
+const ACCEPTED_ORIGINS = [
+    "http://localhost:4200",
+    "https://extraordinary-cassata-484ff7.netlify.app",
+];
 server.app.use(function (req, res, next) {
-    // Website you wish to allow to connect
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    const origin = req.header("origin");
+    if (origin) {
+        if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
+            // Website you wish to allow to connect
+            res.setHeader("Access-Control-Allow-Origin", origin);
+        }
+    }
     // Request methods you wish to allow
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
     // Request headers you wish to allow

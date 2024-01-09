@@ -8,11 +8,11 @@ import authRoutes from "./routes/auth.routes";
 import categoriasRoutes from "./routes/categorias.routes";
 import productosRoutes from "./routes/productos.routes";
 import rolesRoutes from "./routes/roles.routes";
-import proveedoresRoutes from './routes/proveedores.routes';
-import clientesRoutes from './routes/clientes.routes';
-import comprasRoutes from './routes/compras.routes';
-import ventasRoutes from './routes/ventas.routes';
-import montoVentaRoutes from './routes/montoVenta.routes';
+import proveedoresRoutes from "./routes/proveedores.routes";
+import clientesRoutes from "./routes/clientes.routes";
+import comprasRoutes from "./routes/compras.routes";
+import ventasRoutes from "./routes/ventas.routes";
+import montoVentaRoutes from "./routes/montoVenta.routes";
 import {
   crearCategoriaInicial,
   crearMetodosDePago,
@@ -22,10 +22,19 @@ import {
 
 const server = new Server();
 
-server.app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "*");
+const ACCEPTED_ORIGINS = [
+  "http://localhost:4200",
+  "https://extraordinary-cassata-484ff7.netlify.app",
+];
 
+server.app.use(function (req, res, next) {
+  const origin = req.header("origin");
+  if(origin){
+    if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
+      // Website you wish to allow to connect
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+  }
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
