@@ -36,7 +36,6 @@ export const obtenerProveedores = async (req: Request, res: Response) => {
       proveedores: [],
     });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ ok: false, msj: "Ha Habido un error", error });
@@ -70,7 +69,6 @@ export const obtenerProveedor = async (req: Request, res: Response) => {
 
 export const crearProveedor = async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
     const data = req.body;
     if (
       data.nombre === undefined ||

@@ -10,6 +10,9 @@ import productosRoutes from "./routes/productos.routes";
 import rolesRoutes from "./routes/roles.routes";
 import proveedoresRoutes from './routes/proveedores.routes';
 import clientesRoutes from './routes/clientes.routes';
+import comprasRoutes from './routes/compras.routes';
+import ventasRoutes from './routes/ventas.routes';
+import montoVentaRoutes from './routes/montoVenta.routes';
 import {
   crearCategoriaInicial,
   crearMetodosDePago,
@@ -44,8 +47,8 @@ server.app.use(function (req, res, next) {
 //setUp Inicial
 crearRoles();
 crearCategoriaInicial();
-crearProveedorInicial();
 crearMetodosDePago();
+crearProveedorInicial();
 
 //Settings
 server.app.use(bodyParser.json());
@@ -70,4 +73,6 @@ server.app.use("/", productosRoutes);
 server.app.use("/", rolesRoutes);
 server.app.use("/", proveedoresRoutes);
 server.app.use("/", clientesRoutes);
-
+server.app.use("/", comprasRoutes);
+server.app.use("/", ventasRoutes);
+server.app.use("/", montoVentaRoutes);

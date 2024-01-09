@@ -15,6 +15,9 @@ const productos_routes_1 = __importDefault(require("./routes/productos.routes"))
 const roles_routes_1 = __importDefault(require("./routes/roles.routes"));
 const proveedores_routes_1 = __importDefault(require("./routes/proveedores.routes"));
 const clientes_routes_1 = __importDefault(require("./routes/clientes.routes"));
+const compras_routes_1 = __importDefault(require("./routes/compras.routes"));
+const ventas_routes_1 = __importDefault(require("./routes/ventas.routes"));
+const montoVenta_routes_1 = __importDefault(require("./routes/montoVenta.routes"));
 const setUpInicial_1 = require("./libs/setUpInicial");
 const server = new server_1.default();
 server.app.use(function (req, res, next) {
@@ -33,8 +36,8 @@ server.app.use(function (req, res, next) {
 //setUp Inicial
 (0, setUpInicial_1.crearRoles)();
 (0, setUpInicial_1.crearCategoriaInicial)();
-(0, setUpInicial_1.crearProveedorInicial)();
 (0, setUpInicial_1.crearMetodosDePago)();
+(0, setUpInicial_1.crearProveedorInicial)();
 //Settings
 server.app.use(body_parser_1.default.json());
 server.app.use(express_1.default.urlencoded({ extended: true, limit: 10000, parameterLimit: 100 }));
@@ -55,3 +58,6 @@ server.app.use("/", productos_routes_1.default);
 server.app.use("/", roles_routes_1.default);
 server.app.use("/", proveedores_routes_1.default);
 server.app.use("/", clientes_routes_1.default);
+server.app.use("/", compras_routes_1.default);
+server.app.use("/", ventas_routes_1.default);
+server.app.use("/", montoVenta_routes_1.default);

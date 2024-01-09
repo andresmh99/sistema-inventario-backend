@@ -29,7 +29,7 @@ router.post(
   "/productos",
   [
     fileUpload,
-    authJwt.TokenValidation,
+    //authJwt.TokenValidation,
     validarCamposRequeridos,
     validarCampoUnicoEnBD,
     validarCamposNumericos,

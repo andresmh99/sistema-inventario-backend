@@ -93,13 +93,16 @@ model detalleCompra{
   cantidad Int
   idProducto Int
   idCompra Int
+  precioCompra Int
   producto Producto @relation(fields: [idProducto], references: [id])
   compra Compra @relation(fields:[idCompra], references: [id])
 }
 
 model Venta {
   id Int @id @default(autoincrement())
-  montoTotal Float
+  montoTotal Float @default(0)
+  estado Boolean
+  montoPendiente Float @default(0)
   fecha DateTime @default(now())
   idUsuario Int
   idCliente Int

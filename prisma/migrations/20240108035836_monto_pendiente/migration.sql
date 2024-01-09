@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Venta" ADD COLUMN     "montoPendiente" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ALTER COLUMN "montoTotal" SET DEFAULT 0;

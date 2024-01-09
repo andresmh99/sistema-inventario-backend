@@ -15,7 +15,7 @@ router.get("/productos/buscar", [middlewares_1.authJwt.TokenValidation], product
 router.get("/productos/:id", [middlewares_1.authJwt.TokenValidation], producto_controllers_1.obtenerProductoPorId);
 router.post("/productos", [
     fileUploads_1.default,
-    middlewares_1.authJwt.TokenValidation,
+    //authJwt.TokenValidation,
     validacionesProducto_1.validarCamposRequeridos,
     validacionesProducto_1.validarCampoUnicoEnBD,
     validacionesProducto_1.validarCamposNumericos,
