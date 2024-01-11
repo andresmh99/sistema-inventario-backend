@@ -30,7 +30,9 @@ export const obtenerProductos = async (req: Request, res: Response) => {
       skip,
     });
   } catch (error) {
-    return res.status(500).json({ msj: "Error en el servidor", error });
+    return res
+      .status(500)
+      .json({ ok: false, msj: "Error en el servidor", error });
   }
 };
 
@@ -73,19 +75,19 @@ export const crearProducto = async (req: Request, res: Response) => {
       public_image_id: "",
       secure_image_url: "",
       idCategoria: req.body.categoria ? parseInt(req.body.categoria) : 1,
-    };   
+    };
 
     if (req.files?.imagen) {
       const file: any = req.files?.imagen;
       const result = await uploadsImage(file.tempFilePath);
       data.public_image_id = result.public_id;
       data.secure_image_url = result.secure_url;
-      if(file){
+      if (file) {
         eliminarImagen(file.tempFilePath);
       }
-    }else{
-      data.secure_image_url = 'https://res.cloudinary.com/dkwb24r3o/image/upload/v1704253293/sistema-Inventario/oth8x2gyqltcr2sxbrxb.png';
-      
+    } else {
+      data.secure_image_url =
+        "https://res.cloudinary.com/dkwb24r3o/image/upload/v1704253293/sistema-Inventario/oth8x2gyqltcr2sxbrxb.png";
     }
 
     const producto = await prisma.producto.create({
@@ -188,7 +190,7 @@ export const eliminarProducto = async (req: Request, res: Response) => {
       if (producto.imagen) {
         await fs.unlink(path.resolve(producto.imagen));
       }*/
-      if(producto.public_image_id){
+      if (producto.public_image_id) {
         await deleteImage(producto.public_image_id);
       }
 

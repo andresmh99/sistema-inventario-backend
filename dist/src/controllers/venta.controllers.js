@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.crearMontoVenta = exports.crearVenta = exports.obtenerVentas = void 0;
+exports.buscarVentasPorRangoDeFechas = exports.filtroVenta = exports.crearMontoVenta = exports.crearVenta = exports.obtenerVentas = void 0;
 const database_1 = require("../database/database");
 const venta_schema_1 = require("../schemas/venta.schema");
 async function calcularMontoTotalVenta(detallesVenta) {
@@ -17,6 +17,9 @@ async function calcularMontoTotalVenta(detallesVenta) {
 }
 const obtenerVentas = async (req, res) => {
     try {
+        const page = Number(req.query.page) || 1;
+        const pageSize = 10;
+        const skip = (page - 1) * pageSize;
         // Consulta todas las ventas con sus detalles y montos asociados
         const ventas = await database_1.prisma.venta.findMany({
             include: {
@@ -31,13 +34,24 @@ const obtenerVentas = async (req, res) => {
                     },
                 },
                 cliente: true,
-                usuario: true,
+                usuario: { select: { nombre: true, rol: true } },
             },
+            skip: skip,
+            take: pageSize,
+            orderBy: { fecha: "desc" },
         });
-        return res.status(200).json({ ventas });
+        const totalCount = await database_1.prisma.venta.count();
+        const pageCount = Math.ceil(totalCount / pageSize);
+        const info = {
+            count: totalCount,
+            pages: pageCount,
+        };
+        return res.status(200).json({ ok: true, info, ventas, skip });
     }
     catch (error) {
-        return res.status(500).json(error);
+        return res
+            .status(500)
+            .json({ ok: false, msj: "Error en el servidor", error });
     }
 };
 exports.obtenerVentas = obtenerVentas;
@@ -78,7 +92,9 @@ const crearVenta = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json(error);
+        return res
+            .status(500)
+            .json({ ok: false, msj: "Error en el servidor", error });
     }
 };
 exports.crearVenta = crearVenta;
@@ -166,3 +182,79 @@ const crearMontoVenta = async (req, res) => {
     }
 };
 exports.crearMontoVenta = crearMontoVenta;
+const filtroVenta = async (req, res) => {
+    const page = Number(req.query.page) || 1;
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
+    try {
+        const data = req.query["s"];
+        const ventas = await database_1.prisma.venta.findMany({
+            where: {
+                OR: [],
+            },
+            include: {
+                detalleVentas: true, // Ajusta según la relación en tu modelo
+            },
+            skip: skip,
+            take: pageSize,
+            orderBy: { fecha: "desc" },
+        });
+        const totalCount = await database_1.prisma.venta.count();
+        const pageCount = Math.ceil(totalCount / pageSize);
+        const info = {
+            count: totalCount,
+            pages: pageCount,
+        };
+        if (ventas.length > 0) {
+            return res.status(200).json({
+                ok: true,
+                msj: "",
+                ventas,
+                info,
+            });
+        }
+        return res.status(404).json({
+            ok: false,
+            msj: "Venta no encontrado",
+            productos: [],
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msj: "Error al buscar Venta",
+            error,
+        });
+    }
+};
+exports.filtroVenta = filtroVenta;
+const buscarVentasPorRangoDeFechas = async (req, res) => {
+    try {
+        const { fechaInicio, fechaFin } = req.query;
+        if (!fechaInicio || !fechaFin) {
+            return res
+                .status(400)
+                .json({ error: "Se requieren las fechas de inicio y fin." });
+        }
+        const ventas = await database_1.prisma.venta.findMany({
+            where: {
+                fecha: {
+                    gte: new Date(fechaInicio),
+                    lte: new Date(fechaFin),
+                },
+            },
+            include: {
+                // Incluye las relaciones necesarias si es necesario.
+                detalleVentas: { select: { producto: true, cantidad: true } },
+                cliente: true,
+                usuario: { select: { nombre: true, rol: true } },
+            },
+        });
+        return res.status(200).json({ ventas });
+    }
+    catch (error) {
+        console.error("Error al buscar ventas por rango de fechas:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+exports.buscarVentasPorRangoDeFechas = buscarVentasPorRangoDeFechas;

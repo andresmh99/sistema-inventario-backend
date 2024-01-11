@@ -29,7 +29,9 @@ const obtenerProductos = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ msj: "Error en el servidor", error });
+        return res
+            .status(500)
+            .json({ ok: false, msj: "Error en el servidor", error });
     }
 };
 exports.obtenerProductos = obtenerProductos;
@@ -82,7 +84,8 @@ const crearProducto = async (req, res) => {
             }
         }
         else {
-            data.secure_image_url = 'https://res.cloudinary.com/dkwb24r3o/image/upload/v1704253293/sistema-Inventario/oth8x2gyqltcr2sxbrxb.png';
+            data.secure_image_url =
+                "https://res.cloudinary.com/dkwb24r3o/image/upload/v1704253293/sistema-Inventario/oth8x2gyqltcr2sxbrxb.png";
         }
         const producto = await database_1.prisma.producto.create({
             data,

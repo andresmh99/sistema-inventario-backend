@@ -1,8 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const middlewares_1 = require("../middlewares");
 const venta_controllers_1 = require("../controllers/venta.controllers");
 const router = (0, express_1.Router)();
 router.post('/ventas', venta_controllers_1.crearVenta);
 router.get('/ventas', venta_controllers_1.obtenerVentas);
+router.get("/ventas/buscar", [middlewares_1.authJwt.TokenValidation], venta_controllers_1.filtroVenta);
+router.get('/ventas/rango-fechas', venta_controllers_1.buscarVentasPorRangoDeFechas);
+//router.delete('/venta/:id', eliminar);
 exports.default = router;
