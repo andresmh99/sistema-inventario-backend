@@ -113,7 +113,8 @@ export const crearMontoVenta = async (req: Request, res: Response) => {
   try {
     const dataRequest = {
       idVenta: parseInt(req.params["idVenta"]),
-      ...req.body,
+      idMetodoPago: parseInt(req.body.idMetodoPago),
+      monto: parseFloat(req.body.monto),
     };
     const dataValidada = validarMontoVenta(dataRequest);
 

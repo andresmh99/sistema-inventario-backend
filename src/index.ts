@@ -13,6 +13,7 @@ import clientesRoutes from "./routes/clientes.routes";
 import comprasRoutes from "./routes/compras.routes";
 import ventasRoutes from "./routes/ventas.routes";
 import montoVentaRoutes from "./routes/montoVenta.routes";
+import metodoPagosRoutes from './routes/metodoPago.routes';
 import {
   crearCategoriaInicial,
   crearMetodosDePago,
@@ -85,3 +86,4 @@ server.app.use("/", clientesRoutes);
 server.app.use("/", comprasRoutes);
 server.app.use("/", ventasRoutes);
 server.app.use("/", montoVentaRoutes);
+server.app.use("/", metodoPagosRoutes);

@@ -100,7 +100,11 @@ const crearVenta = async (req, res) => {
 exports.crearVenta = crearVenta;
 const crearMontoVenta = async (req, res) => {
     try {
-        const dataRequest = Object.assign({ idVenta: parseInt(req.params["idVenta"]) }, req.body);
+        const dataRequest = {
+            idVenta: parseInt(req.params["idVenta"]),
+            idMetodoPago: parseInt(req.body.idMetodoPago),
+            monto: parseFloat(req.body.monto),
+        };
         const dataValidada = (0, venta_schema_1.validarMontoVenta)(dataRequest);
         if (!dataValidada.success) {
             return res.status(422).json({
