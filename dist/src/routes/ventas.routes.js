@@ -8,5 +8,5 @@ router.post('/ventas', venta_controllers_1.crearVenta);
 router.get('/ventas', venta_controllers_1.obtenerVentas);
 router.get("/ventas/buscar", [middlewares_1.authJwt.TokenValidation], venta_controllers_1.filtroVenta);
 router.get('/ventas/rango-fechas', venta_controllers_1.buscarVentasPorRangoDeFechas);
-//router.delete('/venta/:id', eliminar);
+router.delete('/ventas/:id', venta_controllers_1.eliminarVenta);
 exports.default = router;

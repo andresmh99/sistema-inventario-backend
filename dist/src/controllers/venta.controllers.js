@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buscarVentasPorRangoDeFechas = exports.filtroVenta = exports.crearMontoVenta = exports.crearVenta = exports.obtenerVentas = void 0;
+exports.eliminarVenta = exports.buscarVentasPorRangoDeFechas = exports.filtroVenta = exports.crearMontoVenta = exports.crearVenta = exports.obtenerVentas = void 0;
 const database_1 = require("../database/database");
 const venta_schema_1 = require("../schemas/venta.schema");
 async function calcularMontoTotalVenta(detallesVenta) {
@@ -15,6 +15,30 @@ async function calcularMontoTotalVenta(detallesVenta) {
     }
     return montoTotal;
 }
+const eliminarDetallesVenta = async (id) => {
+    // Buscar los detalles asociados a la venta que se eliminará
+    const detallesVenta = await database_1.prisma.detalleVenta.findMany({
+        where: { idVenta: id },
+    });
+    // Eliminar los detalles asociados a la venta que se eliminará
+    await Promise.all(detallesVenta.map(async (detalleVenta) => {
+        await database_1.prisma.detalleVenta.delete({
+            where: { id: detalleVenta.id },
+        });
+    }));
+};
+const eliminarMontosVenta = async (id) => {
+    // Buscar los montos de venta asociados a la venta que se eliminará
+    const montoVenta = await database_1.prisma.montoVenta.findMany({
+        where: { idVenta: id },
+    });
+    // Eliminar los montos de venta asociados a la venta que se eliminará
+    await Promise.all(montoVenta.map(async (montoVenta) => {
+        await database_1.prisma.montoVenta.delete({
+            where: { id: montoVenta.id },
+        });
+    }));
+};
 const obtenerVentas = async (req, res) => {
     try {
         const page = Number(req.query.page) || 1;
@@ -262,3 +286,38 @@ const buscarVentasPorRangoDeFechas = async (req, res) => {
     }
 };
 exports.buscarVentasPorRangoDeFechas = buscarVentasPorRangoDeFechas;
+const eliminarVenta = async (req, res) => {
+    try {
+        const id = parseInt(req.params["id"]);
+        // Buscar la venta que se va a eliminar
+        const ventaAEliminar = await database_1.prisma.venta.findUnique({
+            where: { id: id },
+        });
+        if (!ventaAEliminar) {
+            return res.status(404).json({ ok: false, msj: "Venta no encontrada" });
+        }
+        else if (ventaAEliminar.estado) {
+            return res.status(500).json({
+                ok: false,
+                msj: "No se puede eliminar una venta pagada",
+            });
+        }
+        await eliminarDetallesVenta(id);
+        await eliminarMontosVenta(id);
+        const venta = await database_1.prisma.venta.delete({ where: { id: id } });
+        if (venta) {
+            return res.status(200).json({
+                ok: true,
+                msj: "Venta eliminada exitosamente",
+            });
+        }
+        return res.status(403).send({
+            ok: false,
+            msj: "No se ha podido completar la acción, por favor intente de nuevo",
+        });
+    }
+    catch (error) {
+        return res.status(500).json({ msj: "Ha Habido un error", error });
+    }
+};
+exports.eliminarVenta = eliminarVenta;

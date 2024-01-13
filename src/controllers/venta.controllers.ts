@@ -25,6 +25,38 @@ async function calcularMontoTotalVenta(
 
   return montoTotal;
 }
+const eliminarDetallesVenta = async (id: number) => {
+  // Buscar los detalles asociados a la venta que se eliminará
+  const detallesVenta = await prisma.detalleVenta.findMany({
+    where: { idVenta: id },
+  });
+
+  // Eliminar los detalles asociados a la venta que se eliminará
+  await Promise.all(
+    detallesVenta.map(async (detalleVenta) => {
+      await prisma.detalleVenta.delete({
+        where: { id: detalleVenta.id },
+      });
+    })
+  );
+};
+
+const eliminarMontosVenta = async (id: number) => {
+  // Buscar los montos de venta asociados a la venta que se eliminará
+  const montoVenta = await prisma.montoVenta.findMany({
+    where: { idVenta: id },
+  });
+
+  // Eliminar los montos de venta asociados a la venta que se eliminará
+  await Promise.all(
+    montoVenta.map(async (montoVenta) => {
+      await prisma.montoVenta.delete({
+        where: { id: montoVenta.id },
+      });
+    })
+  );
+};
+
 export const obtenerVentas = async (req: Request, res: Response) => {
   try {
     const page: number = Number(req.query.page) || 1;
@@ -280,7 +312,7 @@ export const buscarVentasPorRangoDeFechas = async (
       },
       include: {
         // Incluye las relaciones necesarias si es necesario.
-        detalleVentas: {select:{producto:true, cantidad:true}},
+        detalleVentas: { select: { producto: true, cantidad: true } },
         cliente: true,
         usuario: { select: { nombre: true, rol: true } },
       },
@@ -292,3 +324,43 @@ export const buscarVentasPorRangoDeFechas = async (
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
+
+export const eliminarVenta = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params["id"]);
+
+    // Buscar la venta que se va a eliminar
+    const ventaAEliminar = await prisma.venta.findUnique({
+      where: { id: id },
+    });
+
+    if (!ventaAEliminar) {
+      return res.status(404).json({ ok: false, msj: "Venta no encontrada" });
+    } else if (ventaAEliminar.estado) {
+      return res.status(500).json({
+        ok: false,
+        msj: "No se puede eliminar una venta pagada",
+      });
+    }
+
+   await eliminarDetallesVenta(id)
+   await eliminarMontosVenta(id)
+
+    const venta = await prisma.venta.delete({ where: { id: id } });
+
+    if (venta) {
+      return res.status(200).json({
+        ok: true,
+        msj: "Venta eliminada exitosamente",
+      });
+    }
+    return res.status(403).send({
+      ok: false,
+      msj: "No se ha podido completar la acción, por favor intente de nuevo",
+    });
+  } catch (error) {
+    return res.status(500).json({ msj: "Ha Habido un error", error });
+  }
+};
+
+
