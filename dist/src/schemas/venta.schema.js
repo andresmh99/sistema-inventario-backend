@@ -36,6 +36,13 @@ const ventaSchema = zod_1.default.object({
     })
         .int({ message: "El ID del cliente debe ser un numero entero" })
         .positive({ message: "El ID del cliente debe ser positivo" }),
+    idCaja: zod_1.default
+        .number({
+        invalid_type_error: "El ID de la caja debe ser numerico",
+        required_error: "El ID de la caja es requerido",
+    })
+        .int({ message: "El ID de la caja debe ser un numero entero" })
+        .positive({ message: "El ID de la caja debe ser positivo" }),
     detallesVenta: zod_1.default.array(detalleVentaSchema),
 });
 const montoVentaSchema = zod_1.default.object({

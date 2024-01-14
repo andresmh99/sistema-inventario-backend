@@ -106,6 +106,8 @@ model Venta {
   fecha DateTime @default(now())
   idUsuario Int
   idCliente Int
+  idCaja Int
+  caja Caja @relation(fields: [idCaja], references: [id])
   cliente Cliente @relation(fields: [idCliente], references: [id])
   usuario Usuario @relation(fields: [idUsuario], references: [id])
   detalleVentas DetalleVenta[]
@@ -134,10 +136,31 @@ model Caja{
   id Int @id @default(autoincrement())
   fecha DateTime @default(now())
   idUsuario Int
-  estado Boolean
+  estado Boolean @default(true)
   montoInicial Float @default(0)
   montoActual Float @default(0)
-  MontoCierre Float @default(0)
-  comentarios String ?
+  cierreCaja CierreCaja? 
+  deposito Deposito?
   usuario Usuario @relation(fields: [idUsuario], references: [id])
+  ventas Venta[]
+}
+model CierreCaja{
+  id Int @id @default(autoincrement())
+  fecha DateTime @default(now())
+  montoCierre Float @default(0)
+  diferencia Float @default(0)
+  comentarios String ?
+  idCaja Int @unique
+  caja Caja @relation(fields: [idCaja], references: [id])
+  deposito Deposito?
+}
+
+model Deposito{
+  id Int @id @default(autoincrement())
+  idCaja Int @unique
+  caja Caja @relation(fields: [idCaja], references: [id])
+  idCierreCaja Int @unique
+  cierreCaja CierreCaja @relation(fields: [idCierreCaja], references:[id])
+  montoDeposito Float @default(0)
+  restanteCaja Float @default(0)
 }

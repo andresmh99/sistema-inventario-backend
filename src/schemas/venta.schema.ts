@@ -15,6 +15,7 @@ const detalleVentaSchema = z.object({
     })
     .int({ message: "El ID del producto debe ser un numero entero" })
     .positive({ message: "El ID del producto debe ser positivo" }),
+    
 });
 
 const ventaSchema = z.object({
@@ -32,6 +33,13 @@ const ventaSchema = z.object({
     })
     .int({ message: "El ID del cliente debe ser un numero entero" })
     .positive({ message: "El ID del cliente debe ser positivo" }),
+    idCaja: z
+    .number({
+      invalid_type_error: "El ID de la caja debe ser numerico",
+      required_error: "El ID de la caja es requerido",
+    })
+    .int({ message: "El ID de la caja debe ser un numero entero" })
+    .positive({ message: "El ID de la caja debe ser positivo" }),
 
   detallesVenta: z.array(detalleVentaSchema),
 });
@@ -57,6 +65,7 @@ const montoVentaSchema = z.object({
     })
     .int({ message: "El ID del método de pago debe ser un número entero" })
     .positive({ message: "El ID del método de pago debe ser positivo" }),
+
 });
 
 export function validarVenta(object: object) {

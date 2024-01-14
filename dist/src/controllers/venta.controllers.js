@@ -87,7 +87,7 @@ const crearVenta = async (req, res) => {
                 .status(422)
                 .json({ ok: false, msj: JSON.parse(data.error.message) });
         }
-        const { idUsuario, idCliente, detallesVenta } = data.data;
+        const { idUsuario, idCliente, detallesVenta, idCaja } = data.data;
         // Calcular el monto total de la venta basado en los detalles de venta
         const montoTotalCalculado = await calcularMontoTotalVenta(detallesVenta);
         // Crear la venta
@@ -96,6 +96,7 @@ const crearVenta = async (req, res) => {
                 montoTotal: montoTotalCalculado,
                 idUsuario,
                 idCliente,
+                idCaja,
                 estado: false,
                 montoPendiente: montoTotalCalculado,
                 detalleVentas: {

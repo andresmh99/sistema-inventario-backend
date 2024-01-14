@@ -19,6 +19,7 @@ const compras_routes_1 = __importDefault(require("./routes/compras.routes"));
 const ventas_routes_1 = __importDefault(require("./routes/ventas.routes"));
 const montoVenta_routes_1 = __importDefault(require("./routes/montoVenta.routes"));
 const metodoPago_routes_1 = __importDefault(require("./routes/metodoPago.routes"));
+const caja_routes_1 = __importDefault(require("./routes/caja.routes"));
 const setUpInicial_1 = require("./libs/setUpInicial");
 const server = new server_1.default();
 const ACCEPTED_ORIGINS = [
@@ -72,3 +73,4 @@ server.app.use("/", compras_routes_1.default);
 server.app.use("/", ventas_routes_1.default);
 server.app.use("/", montoVenta_routes_1.default);
 server.app.use("/", metodoPago_routes_1.default);
+server.app.use("/", caja_routes_1.default);

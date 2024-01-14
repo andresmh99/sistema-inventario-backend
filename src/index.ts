@@ -14,12 +14,14 @@ import comprasRoutes from "./routes/compras.routes";
 import ventasRoutes from "./routes/ventas.routes";
 import montoVentaRoutes from "./routes/montoVenta.routes";
 import metodoPagosRoutes from './routes/metodoPago.routes';
+import cajaRoutes from "./routes/caja.routes";
 import {
   crearCategoriaInicial,
   crearMetodosDePago,
   crearProveedorInicial,
   crearRoles,
 } from "./libs/setUpInicial";
+
 
 const server = new Server();
 
@@ -87,3 +89,4 @@ server.app.use("/", comprasRoutes);
 server.app.use("/", ventasRoutes);
 server.app.use("/", montoVentaRoutes);
 server.app.use("/", metodoPagosRoutes);
+server.app.use("/", cajaRoutes);
