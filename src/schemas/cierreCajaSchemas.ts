@@ -17,6 +17,6 @@ const cierreCajaSchema = z.object({
     .positive({ message: "El Monto de cierre debe ser positivo" }),
 });
 
-export function validarCaja(object: object) {
+export function validarCierreCaja(object: object) {
   return cierreCajaSchema.safeParse(object);
 }

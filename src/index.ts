@@ -21,6 +21,7 @@ import {
   crearProveedorInicial,
   crearRoles,
 } from "./libs/setUpInicial";
+import cierreCajaRoutes from "./routes/cierreCaja.Routes";
 
 
 const server = new Server();
@@ -90,3 +91,4 @@ server.app.use("/", ventasRoutes);
 server.app.use("/", montoVentaRoutes);
 server.app.use("/", metodoPagosRoutes);
 server.app.use("/", cajaRoutes);
+server.app.use("/", cierreCajaRoutes);

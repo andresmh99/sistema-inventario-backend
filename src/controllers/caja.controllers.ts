@@ -57,14 +57,27 @@ export const iniciarCaja = async (req: Request, res: Response) => {
 
     const { idUsuario, montoInicial } = data.data;
 
-    const cajaIniciada = await prisma.caja.findMany({where: { estado: true}})
+    const existeUsuario = await prisma.usuario.findFirst({
+      where: { id: idUsuario },
+    });
 
-    if(cajaIniciada.length){
-        return res.status(400).json({
-            ok: false,
-            msj: `Ya existe una caja iniciada  `,
-            cajaIniciada,
-          });
+    if (!existeUsuario) {
+      return res.status(400).json({
+        ok: false,
+        msj: `El ID de usuario proporcionado no existe`,
+      });
+    }
+
+    const cajaIniciada = await prisma.caja.findMany({
+      where: { estado: true },
+    });
+
+    if (cajaIniciada.length) {
+      return res.status(400).json({
+        ok: false,
+        msj: `Ya existe una caja iniciada  `,
+        cajas: cajaIniciada,
+      });
     }
 
     const caja = await prisma.caja.create({

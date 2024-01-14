@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authJwt } from "../middlewares";
-import { iniciarCaja, obtenerCajas } from "../controllers/caja.controlles";
+import { iniciarCaja, obtenerCajas } from "../controllers/caja.controllers";
 
 const router: Router = Router();
 

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validarCaja = void 0;
+exports.validarCierreCaja = void 0;
 const zod_1 = __importDefault(require("zod"));
 const cierreCajaSchema = zod_1.default.object({
     idCaja: zod_1.default
@@ -20,7 +20,7 @@ const cierreCajaSchema = zod_1.default.object({
     })
         .positive({ message: "El Monto de cierre debe ser positivo" }),
 });
-function validarCaja(object) {
+function validarCierreCaja(object) {
     return cierreCajaSchema.safeParse(object);
 }
-exports.validarCaja = validarCaja;
+exports.validarCierreCaja = validarCierreCaja;
