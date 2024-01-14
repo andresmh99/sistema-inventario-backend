@@ -22,6 +22,7 @@ import {
   crearRoles,
 } from "./libs/setUpInicial";
 import cierreCajaRoutes from "./routes/cierreCaja.Routes";
+import depositosRoutes from "./routes/depositos.routes";
 
 
 const server = new Server();
@@ -92,3 +93,4 @@ server.app.use("/", montoVentaRoutes);
 server.app.use("/", metodoPagosRoutes);
 server.app.use("/", cajaRoutes);
 server.app.use("/", cierreCajaRoutes);
+server.app.use("/", depositosRoutes);
