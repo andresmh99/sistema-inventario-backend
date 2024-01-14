@@ -76,7 +76,7 @@ export const iniciarCierreCaja = async (req: Request, res: Response) => {
     }
 
     const cierreCaja = await prisma.cierreCaja.create({
-      data: { idCaja, montoCierre, diferencia },
+      data: { idCaja, montoCierre, diferencia},
       include: { deposito: true },
     });
 

@@ -88,6 +88,19 @@ const crearVenta = async (req, res) => {
                 .json({ ok: false, msj: JSON.parse(data.error.message) });
         }
         const { idUsuario, idCliente, detallesVenta, idCaja } = data.data;
+        const caja = await database_1.prisma.caja.findFirst({ where: { id: idCaja } });
+        if (!caja) {
+            return res.status(404).json({
+                ok: true,
+                msj: `El ID de la caja ingresado no existe`,
+            });
+        }
+        if (caja.estado === false) {
+            return res.status(400).json({
+                ok: true,
+                msj: `La caja que ha sido cerrada previamente no admite nuevas transacciones; por lo tanto, no es posible registrar una venta en una caja que ya está cerrada.`,
+            });
+        }
         // Calcular el monto total de la venta basado en los detalles de venta
         const montoTotalCalculado = await calcularMontoTotalVenta(detallesVenta);
         // Crear la venta

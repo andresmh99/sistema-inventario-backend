@@ -107,6 +107,21 @@ export const crearVenta = async (req: Request, res: Response) => {
     }
     const { idUsuario, idCliente, detallesVenta, idCaja } = data.data;
 
+    const caja = await prisma.caja.findFirst({ where: { id: idCaja } });
+
+    if (!caja) {
+      return res.status(404).json({
+        ok: true,
+        msj: `El ID de la caja ingresado no existe`,
+      });
+    }
+    if (caja.estado === false) {
+      return res.status(400).json({
+        ok: true,
+        msj: `La caja que ha sido cerrada previamente no admite nuevas transacciones; por lo tanto, no es posible registrar una venta en una caja que ya está cerrada.`,
+      });
+    }
+
     // Calcular el monto total de la venta basado en los detalles de venta
     const montoTotalCalculado = await calcularMontoTotalVenta(detallesVenta);
 
@@ -344,8 +359,8 @@ export const eliminarVenta = async (req: Request, res: Response) => {
       });
     }
 
-   await eliminarDetallesVenta(id)
-   await eliminarMontosVenta(id)
+    await eliminarDetallesVenta(id);
+    await eliminarMontosVenta(id);
 
     const venta = await prisma.venta.delete({ where: { id: id } });
 
@@ -363,5 +378,3 @@ export const eliminarVenta = async (req: Request, res: Response) => {
     return res.status(500).json({ msj: "Ha Habido un error", error });
   }
 };
-
-
