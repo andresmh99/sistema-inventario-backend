@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import { prisma } from "../database/database";
 import { eliminarImagen } from "../middlewares/validacionesProducto";
 import { uploadsImage, deleteImage } from "../libs/cloudinary";
+import {
+  validarProducto,
+  validarProductoParcial,
+} from "../schemas/producto.schema";
 
 export const obtenerProductos = async (req: Request, res: Response) => {
   const page: number = Number(req.query.page) || 1;
@@ -64,24 +68,44 @@ export const obtenerProductoPorId = async (req: Request, res: Response) => {
 
 export const crearProducto = async (req: Request, res: Response) => {
   try {
-    const data = {
-      nombreProducto: req.body.nombreProducto,
-      descripcion: req.body.descripcion,
-      sku: req.body.sku,
-      precioVenta: parseFloat(req.body.precioVenta),
-      precioCompra: parseFloat(req.body.precioCompra),
-      marca: req.body.marca,
-      stock: parseInt(req.body.stock),
-      public_image_id: "",
-      secure_image_url: "",
-      idCategoria: req.body.categoria ? parseInt(req.body.categoria) : 1,
-    };
+    const { body, files } = req;
 
-    if (req.files?.imagen) {
-      const file: any = req.files?.imagen;
+    // Convertir propiedades a números si son cadenas
+    const propiedadesNumericas = [
+      "precioCompra",
+      "precioVenta",
+      "stock",
+      "idCategoria",
+    ];
+
+    propiedadesNumericas.forEach((prop) => {
+      if (prop === "idCategoria" && body[prop] === undefined) {
+        body[prop] = 1;
+      }
+
+      if (typeof body[prop] === "string") {
+        body[prop] = parseInt(body[prop]);
+      }
+    });
+
+    const datosValidados = validarProducto(body);
+
+    if (!datosValidados.success) {
+      const file: any = files?.imagen;
+      eliminarImagen(file?.tempFilePath);
+      return res
+        .status(422)
+        .json({ ok: false, msj: JSON.parse(datosValidados.error.message) });
+    }
+
+    const data = datosValidados.data;
+
+    if (files?.imagen) {
+      const file: any = files.imagen;
       const result = await uploadsImage(file.tempFilePath);
       data.public_image_id = result.public_id;
       data.secure_image_url = result.secure_url;
+
       if (file) {
         eliminarImagen(file.tempFilePath);
       }
@@ -94,57 +118,104 @@ export const crearProducto = async (req: Request, res: Response) => {
       data,
       include: { categoria: true },
     });
+
     if (!producto) {
       return res.status(500).json({
         ok: false,
         msj: "El producto no pudo ser registrado. Por favor, intente nuevamente.",
       });
     }
+
     return res.status(201).json({
       ok: true,
       producto,
       msj: "El producto ha sido registrado exitosamente.",
     });
   } catch (error) {
+    const file: any = req.files?.imagen;
+    eliminarImagen(file?.tempFilePath);
     res.status(500).json({ msj: "Error en el servidor", error });
   }
 };
 
 export const actualizarProducto = async (req: Request, res: Response) => {
   try {
-    const id = parseInt(req.params["id"]);
-    // Filtra solo los campos que tienen valores en req.body
-    const data: any = {};
-    if (req.body.nombreProducto) data.nombreProducto = req.body.nombreProducto;
-    if (req.body.descripcion) data.descripcion = req.body.descripcion;
-    if (req.body.sku) data.sku = req.body.sku;
-    if (!isNaN(parseFloat(req.body.precioVenta)))
-      data.precioVenta = parseFloat(req.body.precioVenta);
-    if (!isNaN(parseFloat(req.body.precioCompra)))
-      data.precioCompra = parseFloat(req.body.precioCompra);
-    if (req.body.marca) data.marca = req.body.marca;
-    if (!isNaN(parseInt(req.body.stock))) data.stock = parseInt(req.body.stock);
+    const { params, body, files } = req;
+    params.id = parseInt(params.id);
 
-    const producto = await prisma.producto.update({
-      where: { id: id },
-      data: data,
+    // Convertir propiedades a números si son cadenas
+    ["precioCompra", "precioVenta", "stock", "idCategoria"].forEach((prop) => {
+      if (typeof body[prop] === "string") {
+        body[prop] = parseInt(body[prop]);
+      }
     });
-    if (producto) {
-      return res.json({
-        ok: true,
-        producto,
-        msj: "El producto actualizado exitosamente",
+
+    const datosValidados = validarProductoParcial({ params, body });
+
+    if (!datosValidados.success) {
+      const file: any = files?.imagen;
+      eliminarImagen(file.tempFilePath);
+      return res
+        .status(422)
+        .json({ ok: false, msj: JSON.parse(datosValidados.error.message) });
+    }
+
+    const {
+      data: { body: dataBody, params: dataParams },
+    } = datosValidados;
+
+    if (dataParams && dataBody) {
+      const producto = await prisma.producto.findFirst({
+        where: { id: dataParams.id },
       });
+
+      if (!producto) {
+        return res
+          .status(404)
+          .json({ ok: false, msj: "Producto no encontrado" });
+      }
+      let secure_image_url = dataBody.secure_image_url;
+
+      if (files?.imagen) {
+        const file: any = files?.imagen;
+        const result = await uploadsImage(file.tempFilePath);
+        dataBody.public_image_id = result.public_id;
+        dataBody.secure_image_url = result.secure_url;
+
+        if (producto.public_image_id) {
+          await deleteImage(producto.public_image_id);
+        }
+
+        if (file) {
+          eliminarImagen(file.tempFilePath);
+        }
+      } else {
+        secure_image_url =
+          "https://res.cloudinary.com/dkwb24r3o/image/upload/v1704253293/sistema-Inventario/oth8x2gyqltcr2sxbrxb.png";
+      }
+
+      const productoActualizado = await prisma.producto.update({
+        where: { id: dataParams.id },
+        data: dataBody,
+      });
+
+      if (productoActualizado) {
+        return res.json({
+          ok: true,
+          producto: productoActualizado,
+          msj: "El producto actualizado exitosamente",
+        });
+      }
     }
   } catch (error) {
-    console.log(error);
-    return res.status(403).send({
-      ok: false,
-      msj: "Error en el servidor",
-      error,
-    });
+    const file: any = req.files?.imagen;
+    eliminarImagen(file?.tempFilePath);
+    return res
+      .status(403)
+      .send({ ok: false, msj: "Error en el servidor", error });
   }
 };
+
 /*export const actualizarImagen = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params["id"]);
@@ -186,10 +257,6 @@ export const eliminarProducto = async (req: Request, res: Response) => {
     });
 
     if (producto) {
-      /*console.log(producto.imagen);
-      if (producto.imagen) {
-        await fs.unlink(path.resolve(producto.imagen));
-      }*/
       if (producto.public_image_id) {
         await deleteImage(producto.public_image_id);
       }

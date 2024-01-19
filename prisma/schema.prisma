@@ -72,8 +72,8 @@ model Producto {
   precioCompra Float
   marca String 
   stock Int 
-  public_image_id String 
-  secure_image_url String
+  public_image_id String ?
+  secure_image_url String ?
   idCategoria Int 
   categoria Categoria @relation(fields: [idCategoria], references: [id])
   detalleCompra detalleCompra[]
@@ -139,6 +139,7 @@ model Caja{
   estado Boolean @default(true)
   montoInicial Float @default(0)
   montoActual Float @default(0)
+  comentarios String?
   cierreCaja CierreCaja? 
   deposito Deposito?
   usuario Usuario @relation(fields: [idUsuario], references: [id])

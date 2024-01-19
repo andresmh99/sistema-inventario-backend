@@ -45,6 +45,28 @@ export const obtenerCajas = async (req: Request, res: Response) => {
     return res.status(500).json({ msj: "Ha Habido un error", error });
   }
 };
+export const obtenerCajaActiva = async (req: Request, res: Response) => {
+  try {
+    const caja = await prisma.caja.findFirst({
+      where: { estado: true },
+    });
+
+    if (caja) {
+      return res.status(200).json({
+        ok: true,
+        msj: "",
+        caja,
+      });
+    }
+
+    return res.status(404).json({
+      ok: false,
+      msj: "Actualmente no existe una caja abierta. Por favor, proceda a iniciar caja antes de realizar una venta.",
+    });
+  } catch (error) {
+    return res.status(500).json({ msj: "Ha Habido un error", error });
+  }
+};
 
 export const iniciarCaja = async (req: Request, res: Response) => {
   try {

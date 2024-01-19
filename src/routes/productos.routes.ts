@@ -16,9 +16,7 @@ import {
   validarCamposRequeridos,
 } from "../middlewares/validacionesProducto";
 import { authJwt } from "../middlewares";
-import fileUpload from '../libs/fileUploads'
-;
-
+import fileUpload from "../libs/fileUploads";
 
 const router: Router = Router();
 
@@ -38,7 +36,7 @@ router.post(
 );
 router.put(
   "/productos/:id",
-  [authJwt.TokenValidation, validarCampoUnicoEnBDActualizar],
+  [fileUpload],
   actualizarProducto
 );
 router.delete("/productos/:id", [authJwt.TokenValidation], eliminarProducto);
@@ -47,9 +45,6 @@ router.put(
   [authJwt.TokenValidation],
   actualizarStock
 );
-router.put(
-  "/productos/actualizarImagen/:id",
-  [ authJwt.TokenValidation],
-);
+router.put("/productos/actualizarImagen/:id", [authJwt.TokenValidation]);
 
 export default router;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.iniciarCaja = exports.obtenerCajas = void 0;
+exports.iniciarCaja = exports.obtenerCajaActiva = exports.obtenerCajas = void 0;
 const database_1 = require("../database/database");
 const caja_schema_1 = require("../schemas/caja.schema");
 const obtenerCajas = async (req, res) => {
@@ -46,6 +46,28 @@ const obtenerCajas = async (req, res) => {
     }
 };
 exports.obtenerCajas = obtenerCajas;
+const obtenerCajaActiva = async (req, res) => {
+    try {
+        const caja = await database_1.prisma.caja.findFirst({
+            where: { estado: true },
+        });
+        if (caja) {
+            return res.status(200).json({
+                ok: true,
+                msj: "",
+                caja,
+            });
+        }
+        return res.status(404).json({
+            ok: false,
+            msj: "Actualmente no existe una caja abierta. Por favor, proceda a iniciar caja antes de realizar una venta.",
+        });
+    }
+    catch (error) {
+        return res.status(500).json({ msj: "Ha Habido un error", error });
+    }
+};
+exports.obtenerCajaActiva = obtenerCajaActiva;
 const iniciarCaja = async (req, res) => {
     try {
         const data = (0, caja_schema_1.validarCaja)(req.body);

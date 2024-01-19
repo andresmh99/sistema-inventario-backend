@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../database/database";
 import { validarMontoVenta, validarVenta } from "../schemas/venta.schema";
-import { ok } from "assert";
 
 interface DetalleVenta {
   cantidad: number;
@@ -97,6 +96,7 @@ export const obtenerVentas = async (req: Request, res: Response) => {
       .json({ ok: false, msj: "Error en el servidor", error });
   }
 };
+
 export const crearVenta = async (req: Request, res: Response) => {
   try {
     const data = validarVenta(req.body);
