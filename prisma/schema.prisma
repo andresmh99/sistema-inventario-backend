@@ -10,158 +10,165 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Rol {
-  id Int @id @default(autoincrement()) 
-  nombreRol String @unique
-  usuarios Usuario[]
-  
+  id        Int       @id @default(autoincrement())
+  nombreRol String    @unique
+  usuarios  Usuario[]
 }
+
 model Categoria {
-  id Int @id @default(autoincrement())
-  nombreCategoria String @unique
-  descripcion String ?
-  productos Producto[]
+  id              Int        @id @default(autoincrement())
+  nombreCategoria String     @unique
+  descripcion     String?
+  productos       Producto[]
 }
-model Proveedor{
-  id Int @id @default(autoincrement())
-  nombre String @unique 
-  telefono String ?
-  email String ?
-  direccion String ?
-  contacto  String ?
-  compras Compra[]
+
+model Proveedor {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @unique
+  telefono  String?
+  email     String?
+  direccion String?
+  contacto  String?
+  compras   Compra[]
 }
-model Cliente{
-  id Int @id @default(autoincrement())
-  run String @unique
-  nombre String  
-  telefono String ?
-  email String ?
-  ventas Venta[]
+
+model Cliente {
+  id       Int     @id @default(autoincrement())
+  run      String  @unique
+  nombre   String
+  telefono String?
+  email    String?
+  ventas   Venta[]
 }
+
 model Metodo_pago {
-  id Int @id @default(autoincrement())
-  nombre String
+  id          Int          @id @default(autoincrement())
+  nombre      String
   montoVentas MontoVenta[]
 }
+
 model Gasto {
-  id Int @id @default(autoincrement()) 
+  id    Int   @id @default(autoincrement())
   monto Float @default(0)
 }
+
 model Usuario {
-  id Int @id @default(autoincrement())
-  nombreUsuario String @unique
-  rol Rol @relation(fields: [rolId], references: [id])
-  rolId Int
-  nombre String 
-  apellido String 
-  email String @unique
-  password String 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ventas Venta[]
-  cajas Caja[]
-}
-model Producto {
-  id Int @id @default(autoincrement())
-  nombreProducto String @unique
-  descripcion String ?
-  sku String @unique
-  precioVenta Float 
-  precioCompra Float
-  marca String 
-  stock Int 
-  public_image_id String ?
-  secure_image_url String ?
-  idCategoria Int 
-  categoria Categoria @relation(fields: [idCategoria], references: [id])
-  detalleCompra detalleCompra[]
-  detalleVentas DetalleVenta[]
+  id            Int      @id @default(autoincrement())
+  nombreUsuario String   @unique
+  rol           Rol      @relation(fields: [rolId], references: [id])
+  rolId         Int
+  nombre        String
+  apellido      String
+  email         String   @unique
+  password      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  ventas        Venta[]
+  cajas         Caja[]
 }
 
-model Compra{
-  id Int @id @default(autoincrement())
-  montoTotal Float
-  fecha DateTime @default(now())
-  idProveedor Int
-  proveedor Proveedor @relation(fields:[idProveedor], references: [id])
+model Producto {
+  id               Int             @id @default(autoincrement())
+  nombreProducto   String          @unique
+  descripcion      String?
+  sku              String          @unique
+  precioVenta      Float
+  precioCompra     Float
+  marca            String
+  stock            Int
+  public_image_id  String?
+  secure_image_url String?
+  idCategoria      Int
+  categoria        Categoria       @relation(fields: [idCategoria], references: [id])
+  detalleCompra    detalleCompra[]
+  detalleVentas    DetalleVenta[]
+}
+
+model Compra {
+  id            Int             @id @default(autoincrement())
+  montoTotal    Float
+  fecha         DateTime        @default(now())
+  idProveedor   Int
+  proveedor     Proveedor       @relation(fields: [idProveedor], references: [id])
   detalleCompra detalleCompra[]
 }
-model detalleCompra{
-  id Int @id @default(autoincrement())
-  cantidad Int
-  idProducto Int
-  idCompra Int
+
+model detalleCompra {
+  id           Int      @id @default(autoincrement())
+  cantidad     Int
+  idProducto   Int
+  idCompra     Int
   precioCompra Int
-  producto Producto @relation(fields: [idProducto], references: [id])
-  compra Compra @relation(fields:[idCompra], references: [id])
+  producto     Producto @relation(fields: [idProducto], references: [id])
+  compra       Compra   @relation(fields: [idCompra], references: [id])
 }
 
 model Venta {
-  id Int @id @default(autoincrement())
-  montoTotal Float @default(0)
-  estado Boolean
-  montoPendiente Float @default(0)
-  fecha DateTime @default(now())
-  idUsuario Int
-  idCliente Int
-  idCaja Int
-  caja Caja @relation(fields: [idCaja], references: [id])
-  cliente Cliente @relation(fields: [idCliente], references: [id])
-  usuario Usuario @relation(fields: [idUsuario], references: [id])
-  detalleVentas DetalleVenta[]
-  montoVentas MontoVenta[]
+  id             Int            @id @default(autoincrement())
+  montoTotal     Float          @default(0)
+  estado         Boolean
+  montoPendiente Float          @default(0)
+  fecha          DateTime       @default(now())
+  idUsuario      Int
+  idCliente      Int
+  idCaja         Int
+  caja           Caja           @relation(fields: [idCaja], references: [id])
+  cliente        Cliente        @relation(fields: [idCliente], references: [id])
+  usuario        Usuario        @relation(fields: [idUsuario], references: [id])
+  detalleVentas  DetalleVenta[]
+  montoVentas    MontoVenta[]
 }
-model DetalleVenta{
-  id Int @id @default(autoincrement())
-  cantidad Int @default(0)
-  idVenta Int
+
+model DetalleVenta {
+  id         Int      @id @default(autoincrement())
+  cantidad   Int      @default(0)
+  idVenta    Int
   idProducto Int
-  venta Venta @relation(fields: [idVenta], references: [id])
-  producto Producto @relation(fields: [idProducto], references: [id])
-  
+  venta      Venta    @relation(fields: [idVenta], references: [id])
+  producto   Producto @relation(fields: [idProducto], references: [id])
 }
-model MontoVenta{
-  id Int @id @default(autoincrement())
-  monto Float @default(0)
-  idVenta Int
+
+model MontoVenta {
+  id           Int         @id @default(autoincrement())
+  monto        Float       @default(0)
+  idVenta      Int
   idMetodoPago Int
-  venta Venta @relation(fields: [idVenta], references:[id])
-  metodoPago Metodo_pago @relation(fields: [idMetodoPago], references:[id])
+  venta        Venta       @relation(fields: [idVenta], references: [id])
+  metodoPago   Metodo_pago @relation(fields: [idMetodoPago], references: [id])
 }
 
+model Caja {
+  id           Int         @id @default(autoincrement())
+  fecha        DateTime    @default(now())
+  idUsuario    Int
+  estado       Boolean     @default(true)
+  montoInicial Float       @default(0)
+  montoActual  Float       @default(0)
+  comentarios  String?
+  cierreCaja   CierreCaja?
+  deposito     Deposito?
+  usuario      Usuario     @relation(fields: [idUsuario], references: [id])
+  ventas       Venta[]
+}
 
-model Caja{
-  id Int @id @default(autoincrement())
-  fecha DateTime @default(now())
-  idUsuario Int
-  estado Boolean @default(true)
-  montoInicial Float @default(0)
-  montoActual Float @default(0)
+model CierreCaja {
+  id          Int       @id @default(autoincrement())
+  fecha       DateTime  @default(now())
+  montoCierre Float     @default(0)
+  diferencia  Float     @default(0)
   comentarios String?
-  cierreCaja CierreCaja? 
-  deposito Deposito?
-  usuario Usuario @relation(fields: [idUsuario], references: [id])
-  ventas Venta[]
-}
-model CierreCaja{
-  id Int @id @default(autoincrement())
-  fecha DateTime @default(now())
-  montoCierre Float @default(0)
-  diferencia Float @default(0)
-  comentarios String ?
-  idCaja Int @unique
-  caja Caja @relation(fields: [idCaja], references: [id])
-  deposito Deposito?
+  idCaja      Int       @unique
+  caja        Caja      @relation(fields: [idCaja], references: [id])
+  deposito    Deposito?
 }
 
-model Deposito{
-  id Int @id @default(autoincrement())
-  idCaja Int @unique
-  caja Caja @relation(fields: [idCaja], references: [id])
-  idCierreCaja Int @unique
-  cierreCaja CierreCaja @relation(fields: [idCierreCaja], references:[id])
-  montoDeposito Float @default(0)
-  restanteCaja Float @default(0)
+model Deposito {
+  id            Int        @id @default(autoincrement())
+  idCaja        Int        @unique
+  caja          Caja       @relation(fields: [idCaja], references: [id])
+  idCierreCaja  Int        @unique
+  cierreCaja    CierreCaja @relation(fields: [idCierreCaja], references: [id])
+  montoDeposito Float      @default(0)
+  restanteCaja  Float      @default(0)
 }
