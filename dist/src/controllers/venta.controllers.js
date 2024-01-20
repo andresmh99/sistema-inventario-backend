@@ -112,22 +112,24 @@ const crearVenta = async (req, res) => {
                 idCaja,
                 estado: false,
                 montoPendiente: montoTotalCalculado,
-                detalleVentas: {
-                    create: detallesVenta.map((detalle) => ({
+            },
+        });
+        if (nuevaVenta) {
+            await Promise.all(detallesVenta.map(async (detalle) => {
+                await database_1.prisma.detalleVenta.create({
+                    data: {
+                        idProducto: detalle.idProducto,
                         cantidad: detalle.cantidad,
-                        producto: { connect: { id: detalle.idProducto } },
-                    })),
-                },
-            },
-            include: {
-                detalleVentas: true,
-            },
-        });
-        return res.status(201).json({
-            ok: true,
-            msj: `Venta ingresada correctamente, el total a pagar es de: ${montoTotalCalculado} CLP `,
-            venta: nuevaVenta,
-        });
+                        idVenta: nuevaVenta.id,
+                    },
+                });
+            }));
+            return res.status(201).json({
+                ok: true,
+                msj: `Venta ingresada correctamente, el total a pagar es de: ${montoTotalCalculado} CLP `,
+                venta: nuevaVenta,
+            });
+        }
     }
     catch (error) {
         return res
