@@ -13,7 +13,7 @@ import clientesRoutes from "./routes/clientes.routes";
 import comprasRoutes from "./routes/compras.routes";
 import ventasRoutes from "./routes/ventas.routes";
 import montoVentaRoutes from "./routes/montoVenta.routes";
-import metodoPagosRoutes from './routes/metodoPago.routes';
+import metodoPagosRoutes from "./routes/metodoPago.routes";
 import cajaRoutes from "./routes/caja.routes";
 import {
   crearCategoriaInicial,
@@ -24,17 +24,13 @@ import {
 import cierreCajaRoutes from "./routes/cierreCaja.Routes";
 import depositosRoutes from "./routes/depositos.routes";
 
-
 const server = new Server();
 
-const ACCEPTED_ORIGINS = [
-  "http://localhost:4200",
-  "https://extraordinary-cassata-484ff7.netlify.app",
-];
+const ACCEPTED_ORIGINS = process.env.ACCEPTED_ORIGINS;
 
 server.app.use(function (req, res, next) {
   const origin = req.header("origin");
-  if(origin){
+  if (origin && ACCEPTED_ORIGINS) {
     if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
       // Website you wish to allow to connect
       res.setHeader("Access-Control-Allow-Origin", origin);

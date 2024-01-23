@@ -24,13 +24,10 @@ const setUpInicial_1 = require("./libs/setUpInicial");
 const cierreCaja_Routes_1 = __importDefault(require("./routes/cierreCaja.Routes"));
 const depositos_routes_1 = __importDefault(require("./routes/depositos.routes"));
 const server = new server_1.default();
-const ACCEPTED_ORIGINS = [
-    "http://localhost:4200",
-    "https://extraordinary-cassata-484ff7.netlify.app",
-];
+const ACCEPTED_ORIGINS = process.env.ACCEPTED_ORIGINS;
 server.app.use(function (req, res, next) {
     const origin = req.header("origin");
-    if (origin) {
+    if (origin && ACCEPTED_ORIGINS) {
         if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
             // Website you wish to allow to connect
             res.setHeader("Access-Control-Allow-Origin", origin);
