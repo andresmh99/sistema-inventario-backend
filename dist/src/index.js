@@ -23,6 +23,7 @@ const caja_routes_1 = __importDefault(require("./routes/caja.routes"));
 const setUpInicial_1 = require("./libs/setUpInicial");
 const cierreCaja_Routes_1 = __importDefault(require("./routes/cierreCaja.Routes"));
 const depositos_routes_1 = __importDefault(require("./routes/depositos.routes"));
+const gastos_routes_1 = __importDefault(require("./routes/gastos.routes"));
 const server = new server_1.default();
 const ACCEPTED_ORIGINS = process.env.ACCEPTED_ORIGINS;
 server.app.use(function (req, res, next) {
@@ -75,3 +76,4 @@ server.app.use("/", metodoPago_routes_1.default);
 server.app.use("/", caja_routes_1.default);
 server.app.use("/", cierreCaja_Routes_1.default);
 server.app.use("/", depositos_routes_1.default);
+server.app.use("/", gastos_routes_1.default);

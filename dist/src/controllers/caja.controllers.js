@@ -28,21 +28,21 @@ const obtenerCajas = async (req, res) => {
                 _count: true,
             },
         });
-        if (cajas) {
+        if (cajas.length > 0) {
             return res.status(200).json({
                 ok: true,
-                msj: "",
+                msj: "Cajas obtenidas exitosamente",
                 cajas,
             });
         }
         return res.status(404).json({
             ok: false,
-            msj: "Caja no encontrada",
+            msj: "No se encontraron cajas",
             cajas: [],
         });
     }
     catch (error) {
-        return res.status(500).json({ msj: "Ha Habido un error", error });
+        return res.status(500).json({ msj: "Ha habido un error", error });
     }
 };
 exports.obtenerCajas = obtenerCajas;
@@ -68,7 +68,7 @@ const obtenerCajaPorId = async (req, res) => {
         if (caja) {
             return res.status(200).json({
                 ok: true,
-                msj: "",
+                msj: "Caja obtenida exitosamente",
                 caja,
             });
         }
@@ -78,7 +78,7 @@ const obtenerCajaPorId = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ msj: "Ha Habido un error", error });
+        return res.status(500).json({ msj: "Ha habido un error", error });
     }
 };
 exports.obtenerCajaPorId = obtenerCajaPorId;
@@ -90,7 +90,7 @@ const obtenerCajaActiva = async (req, res) => {
         if (caja) {
             return res.status(200).json({
                 ok: true,
-                msj: "",
+                msj: "Caja activa obtenida exitosamente",
                 caja,
             });
         }
@@ -100,7 +100,7 @@ const obtenerCajaActiva = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({ msj: "Ha Habido un error", error });
+        return res.status(500).json({ msj: "Ha habido un error", error });
     }
 };
 exports.obtenerCajaActiva = obtenerCajaActiva;
@@ -110,7 +110,7 @@ const iniciarCaja = async (req, res) => {
         if (!data.success) {
             return res
                 .status(422)
-                .json({ ok: false, msj: JSON.parse(data.error.message) });
+                .json({ ok: false, msj: "Error de validación", errors: data.error });
         }
         const { idUsuario, montoInicial } = data.data;
         const existeUsuario = await database_1.prisma.usuario.findFirst({

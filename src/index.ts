@@ -23,6 +23,7 @@ import {
 } from "./libs/setUpInicial";
 import cierreCajaRoutes from "./routes/cierreCaja.Routes";
 import depositosRoutes from "./routes/depositos.routes";
+import gastosRoutes from "./routes/gastos.routes";
 
 const server = new Server();
 
@@ -90,3 +91,4 @@ server.app.use("/", metodoPagosRoutes);
 server.app.use("/", cajaRoutes);
 server.app.use("/", cierreCajaRoutes);
 server.app.use("/", depositosRoutes);
+server.app.use("/", gastosRoutes);

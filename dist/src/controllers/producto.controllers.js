@@ -127,8 +127,9 @@ exports.crearProducto = crearProducto;
 const actualizarProducto = async (req, res) => {
     var _a;
     try {
-        const { params, body, files } = req;
-        params.id = parseInt(params.id);
+        const { body, files } = req;
+        const params = { id: 0 };
+        params.id = parseInt(req.params.id);
         // Convertir propiedades a números si son cadenas
         ["precioCompra", "precioVenta", "stock", "idCategoria"].forEach((prop) => {
             if (typeof body[prop] === "string") {

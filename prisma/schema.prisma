@@ -50,7 +50,11 @@ model Metodo_pago {
 
 model Gasto {
   id    Int   @id @default(autoincrement())
+  caja Caja @relation(fields: [idCaja], references: [id])
+  idCaja Int
   monto Float @default(0)
+  comentarios String ?
+  createdAt     DateTime @default(now())
 }
 
 model Usuario {
@@ -150,6 +154,7 @@ model Caja {
   deposito     Deposito?
   usuario      Usuario     @relation(fields: [idUsuario], references: [id])
   ventas       Venta[]
+  gastos Gasto[]
 }
 
 model CierreCaja {

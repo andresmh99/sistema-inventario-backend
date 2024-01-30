@@ -6,6 +6,7 @@ import {
   validarProducto,
   validarProductoParcial,
 } from "../schemas/producto.schema";
+import { number } from "zod";
 
 export const obtenerProductos = async (req: Request, res: Response) => {
   const page: number = Number(req.query.page) || 1;
@@ -140,9 +141,10 @@ export const crearProducto = async (req: Request, res: Response) => {
 
 export const actualizarProducto = async (req: Request, res: Response) => {
   try {
-    const { params, body, files } = req;
-    params.id = parseInt(params.id);
-
+    const { body, files } = req;
+    const params = { id: 0 };
+    params.id = parseInt(req.params.id);
+    
     // Convertir propiedades a números si son cadenas
     ["precioCompra", "precioVenta", "stock", "idCategoria"].forEach((prop) => {
       if (typeof body[prop] === "string") {
